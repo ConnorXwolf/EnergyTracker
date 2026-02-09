@@ -440,33 +440,23 @@ class MainWindow(QMainWindow):
                 if child.widget():
                     child.widget().deleteLater()
             
-            # Get tasks for specific date from database
-            from database import DatabaseManager
-            db = DatabaseManager()
-            
-            # Query tasks for this specific date
-            tasks = db.fetch_all("""
-                SELECT id, title, is_completed, category
-                FROM tasks
-                WHERE date = ?
-                ORDER BY is_completed ASC, id DESC
-            """, (date_str,))
+            # Get tasks for specific date from TaskManager
+            tasks = self._task_manager.get_tasks_by_date(date_str)
             
             if not tasks:
                 no_task_label = QLabel(f"No tasks for {date_str}")
+                no_task_label.setStyleSheet("color: #AAAAAA; font-size: 12px;")
                 self.task_checklist_layout.addWidget(no_task_label)
                 return
             
             # Create checkbox for each task
             for task in tasks:
-                task_id, title, is_completed, category = task
-                
-                display_text = f"{title}"
-                if category:
-                    display_text += f" ({category})"
+                display_text = f"{task.title}"
+                if task.category:
+                    display_text += f" ({task.category})"
                 
                 checkbox = QCheckBox(display_text)
-                checkbox.setChecked(bool(is_completed))
+                checkbox.setChecked(task.is_completed)
                 
                 # White checkbox styling, 14pt font
                 checkbox.setStyleSheet("""
@@ -489,17 +479,23 @@ class MainWindow(QMainWindow):
                 
                 # Connect to update handler for current date
                 checkbox.stateChanged.connect(
-                    lambda state, tid=task_id: self._on_task_toggled_on_home(tid, state)
+                    lambda state, tid=task.id: self._on_task_toggled_on_home(tid, state)
                 )
                 
                 self.task_checklist_layout.addWidget(checkbox)
             
+        except ValueError as e:
+            print(f"Date validation error: {e}")
+            error_label = QLabel("Invalid date format")
+            error_label.setStyleSheet("color: #FF6B6B; font-size: 12px;")
+            self.task_checklist_layout.addWidget(error_label)
         except Exception as e:
             print(f"Error updating task summary for {date_str}: {e}")
             import traceback
             traceback.print_exc()
-            no_task_label = QLabel("Error loading tasks")
-            self.task_checklist_layout.addWidget(no_task_label)
+            error_label = QLabel(f"Error loading tasks: {str(e)}")
+            error_label.setStyleSheet("color: #FF6B6B; font-size: 12px;")
+            self.task_checklist_layout.addWidget(error_label)
     
     def _update_exercise_summary(self) -> None:
         """Update exercise checklist display with checkboxes for TODAY."""
