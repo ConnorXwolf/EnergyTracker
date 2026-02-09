@@ -38,6 +38,7 @@ class TaskManager(QObject):
     def create_task(
         self,
         title: str,
+        date: Optional[str] = None,
         due_date: Optional[str] = None,
         priority: int = 0,
         category: Optional[str] = None
@@ -47,6 +48,7 @@ class TaskManager(QObject):
         
         Args:
             title: Task description
+            date: Task assignment date in ISO format (defaults to today)
             due_date: Optional due date in ISO format
             priority: Priority level (0=low, 1=medium, 2=high)
             category: Optional category for grouping
@@ -55,15 +57,19 @@ class TaskManager(QObject):
             Task ID if created, None if failed
         """
         try:
+            # Default to today if no date provided
+            task_date = date if date is not None else get_today()
+            
             task = Task(
                 title=title,
                 is_completed=False,
+                date=task_date,
                 due_date=due_date,
                 priority=priority,
                 category=category
             )
             
-            task_id = self._db.create_task(task)
+            task_id = self._db.create_task(task, date=task_date)
             
             self.data_changed.emit()
             
@@ -71,6 +77,8 @@ class TaskManager(QObject):
             
         except Exception as e:
             print(f"Error creating task: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def get_all_tasks(self) -> List[Task]:
@@ -100,6 +108,27 @@ class TaskManager(QObject):
             return self._db.get_tasks_by_category(category)
         except Exception as e:
             print(f"Error retrieving tasks for category '{category}': {e}")
+            return []
+    
+    def get_tasks_by_date(self, date: str) -> List[Task]:
+        """
+        Retrieve tasks for specific date.
+        
+        Args:
+            date: Date in ISO format (YYYY-MM-DD)
+            
+        Returns:
+            List of Task models for the specified date
+        """
+        try:
+            return self._db.get_tasks_by_date(date)
+        except ValueError as e:
+            print(f"Invalid date format: {e}")
+            return []
+        except Exception as e:
+            print(f"Error retrieving tasks for date '{date}': {e}")
+            import traceback
+            traceback.print_exc()
             return []
     
     def get_task_groups(self) -> List[TaskGroup]:
@@ -150,6 +179,7 @@ class TaskManager(QObject):
         task_id: int,
         title: Optional[str] = None,
         is_completed: Optional[bool] = None,
+        date: Optional[str] = None,
         due_date: Optional[str] = None,
         priority: Optional[int] = None,
         category: Optional[str] = None
@@ -161,6 +191,7 @@ class TaskManager(QObject):
             task_id: Task to update
             title: New title (if provided)
             is_completed: New completion status (if provided)
+            date: New date (if provided)
             due_date: New due date (if provided)
             priority: New priority (if provided)
             category: New category (if provided)
@@ -181,6 +212,7 @@ class TaskManager(QObject):
                 id=task_id,
                 title=title if title is not None else existing.title,
                 is_completed=is_completed if is_completed is not None else existing.is_completed,
+                date=date if date is not None else existing.date,
                 due_date=due_date if due_date is not None else existing.due_date,
                 priority=priority if priority is not None else existing.priority,
                 category=category if category is not None else existing.category
@@ -270,12 +302,13 @@ class TaskManager(QObject):
                 'total': total,
                 'completed': completed,
                 'pending': pending,
-                'overdue': overdue
+                'overdue': overdue,
+                'completion_rate': (completed / total * 100) if total > 0 else 0
             }
             
         except Exception as e:
             print(f"Error calculating statistics: {e}")
-            return {'total': 0, 'completed': 0, 'pending': 0, 'overdue': 0}
+            return {'total': 0, 'completed': 0, 'pending': 0, 'overdue': 0, 'completion_rate': 0}
     
     def get_overdue_tasks(self) -> List[Task]:
         """
