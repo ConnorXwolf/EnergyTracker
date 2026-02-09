@@ -27,10 +27,12 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
 );
 
 -- Task checklist table
+-- MIGRATION NOTE: Added 'date' column for daily task tracking (2026-02-10)
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     is_completed BOOLEAN NOT NULL DEFAULT 0,
+    date DATE NOT NULL DEFAULT (date('now')) CHECK(date LIKE '____-__-__'),
     due_date DATE CHECK(due_date IS NULL OR due_date LIKE '____-__-__'),
     priority INTEGER NOT NULL DEFAULT 0 CHECK(priority BETWEEN 0 AND 2),
     category TEXT,
@@ -47,9 +49,22 @@ CREATE TABLE IF NOT EXISTS events (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Daily points tracking table
+-- Stores Physical/Mental/Sleepiness points per date
+CREATE TABLE IF NOT EXISTS daily_points (
+    date DATE PRIMARY KEY CHECK(date LIKE '____-__-__'),
+    physical INTEGER NOT NULL DEFAULT 0 CHECK(physical BETWEEN 0 AND 10),
+    mental INTEGER NOT NULL DEFAULT 0 CHECK(mental BETWEEN 0 AND 10),
+    sleepiness INTEGER NOT NULL DEFAULT 0 CHECK(sleepiness BETWEEN 0 AND 10),
+    hp INTEGER NOT NULL DEFAULT 0 CHECK(hp BETWEEN 0 AND 100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance optimization
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_date ON exercise_logs(date);
 CREATE INDEX IF NOT EXISTS idx_exercise_logs_exercise_id ON exercise_logs(exercise_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_date ON tasks(date);
 CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
 CREATE INDEX IF NOT EXISTS idx_tasks_category ON tasks(category);
 CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date);
@@ -62,5 +77,6 @@ CREATE TABLE IF NOT EXISTS app_metadata (
 );
 
 -- Insert initial metadata
-INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('db_version', '1.0.0');
+INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('db_version', '1.1.0');
 INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('initialized_at', datetime('now'));
+INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('last_migration', '2026-02-10_add_task_date');
