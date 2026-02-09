@@ -20,6 +20,7 @@ class Task(BaseModel):
         id: Unique identifier (0 for unsaved tasks)
         title: Task description
         is_completed: Completion status flag
+        date: Task creation/assignment date in ISO format
         due_date: Optional due date in ISO format
         priority: Priority level (0=low, 1=medium, 2=high)
         category: Optional categorization (e.g., "收拾書包")
@@ -27,6 +28,7 @@ class Task(BaseModel):
     id: int = Field(default=0, ge=0)
     title: str = Field(min_length=1, max_length=200)
     is_completed: bool = False
+    date: str = Field(pattern=r'^\d{4}-\d{2}-\d{2}$')
     due_date: Optional[str] = Field(
         default=None,
         pattern=r'^\d{4}-\d{2}-\d{2}$'
@@ -54,11 +56,11 @@ class Task(BaseModel):
             raise ValueError("Task title cannot be empty or whitespace")
         return trimmed
     
-    @field_validator('due_date')
+    @field_validator('date', 'due_date')
     @classmethod
-    def validate_due_date(cls, value: Optional[str]) -> Optional[str]:
+    def validate_dates(cls, value: Optional[str]) -> Optional[str]:
         """
-        Validate due date format if provided.
+        Validate date formats if provided.
         
         Args:
             value: Date string or None
@@ -78,7 +80,7 @@ class Task(BaseModel):
             return value
         except ValueError as e:
             raise ValueError(
-                f"Invalid due date format: {value}. Expected YYYY-MM-DD"
+                f"Invalid date format: {value}. Expected YYYY-MM-DD"
             ) from e
     
     def is_overdue(self, current_date: str) -> bool:
