@@ -11,9 +11,9 @@ from PyQt6.QtWidgets import (
     QListWidget, QListWidgetItem, QLabel,
     QPushButton, QHBoxLayout, QDialog,
     QLineEdit, QTextEdit, QDialogButtonBox,
-    QFormLayout, QDateEdit
+    QFormLayout, QDateEdit, QMessageBox  # Added QMessageBox
 )
-from PyQt6.QtCore import Qt, QDate, pyqtSignal
+from PyQt6.QtCore import Qt, QDate, pyqtSignal, QSize # Added QSize
 from PyQt6.QtGui import QTextCharFormat, QColor, QFont
 
 from managers import EventManager
@@ -34,10 +34,6 @@ class CalendarWidget(QWidget):
     def __init__(self, event_manager: EventManager, parent=None):
         """
         Initialize calendar widget.
-        
-        Args:
-            event_manager: Manager for event operations
-            parent: Parent widget
         """
         super().__init__(parent)
         
@@ -51,7 +47,6 @@ class CalendarWidget(QWidget):
     
     def _setup_ui(self) -> None:
         """Initialize UI components and layout."""
-        # Main horizontal layout (calendar + spacer + event list)
         main_layout = QHBoxLayout(self)
         main_layout.setSpacing(10)
         
@@ -84,9 +79,8 @@ class CalendarWidget(QWidget):
         right_layout.addWidget(self.add_event_button)
         right_layout.addStretch()
         
-        # Assemble main layout (calendar + stretch + event list on far right)
         main_layout.addWidget(self.calendar)
-        main_layout.addStretch()  # Push event list to the right
+        main_layout.addStretch()
         main_layout.addLayout(right_layout)
     
     def _connect_signals(self) -> None:
@@ -101,36 +95,22 @@ class CalendarWidget(QWidget):
     def _load_events(self) -> None:
         """Load events for current month and update calendar highlighting."""
         try:
-            # Get events for current month
             events = self._event_manager.get_events_for_month(
                 self._current_year,
                 self._current_month
             )
-            
-            # Clear existing highlights
             self._clear_highlights()
-            
-            # Highlight dates with events
             event_dates = set(event.event_date for event in events)
             for date_str in event_dates:
                 self._highlight_date(date_str)
-            
-            # Refresh event list for selected date
             self._update_event_list()
-            
         except Exception as e:
             print(f"Error loading events: {e}")
     
     def _clear_highlights(self) -> None:
-        """Remove all date highlights from calendar."""
-        # Reset all dates to default format
         default_format = QTextCharFormat()
-        
-        # Get first and last day of visible month
         year = self.calendar.yearShown()
         month = self.calendar.monthShown()
-        
-        # Clear all days in month
         for day in range(1, 32):
             try:
                 date = QDate(year, month, day)
@@ -140,61 +120,35 @@ class CalendarWidget(QWidget):
                 break
     
     def _highlight_date(self, date_str: str) -> None:
-        """
-        Highlight specific date in calendar.
-        
-        Args:
-            date_str: Date in ISO format to highlight
-        """
         try:
-            # Parse ISO date
             year, month, day = map(int, date_str.split('-'))
             date = QDate(year, month, day)
+            if not date.isValid(): return
             
-            if not date.isValid():
-                return
-            
-            # Create highlight format
             highlight_format = QTextCharFormat()
             highlight_format.setBackground(QColor('#4ECDC4'))
             highlight_format.setForeground(QColor('#000000'))
             highlight_format.setFontWeight(QFont.Weight.Bold)
-            
             self.calendar.setDateTextFormat(date, highlight_format)
-            
         except Exception as e:
-            print(f"Error highlighting date {date_str}: {e}")
+            print(f"Error highlighting date: {e}")
     
     def _on_date_selected(self) -> None:
-        """Handle calendar date selection change."""
-        selected_date = self.calendar.selectedDate()
-        date_str = selected_date.toString(Qt.DateFormat.ISODate)
-        
         self._update_event_list()
-        self.date_selected.emit(date_str)
+        self.date_selected.emit(self.calendar.selectedDate().toString(Qt.DateFormat.ISODate))
     
     def _on_month_changed(self, year: int, month: int) -> None:
-        """
-        Handle calendar month change.
-        
-        Args:
-            year: New year
-            month: New month
-        """
-        self._current_year = year
-        self._current_month = month
+        self._current_year, self._current_month = year, month
         self._load_events()
-    
+
+    # --- UPDATED METHOD ---
     def _update_event_list(self) -> None:
-        """Update event list for currently selected date."""
+        """Update event list for currently selected date with delete buttons."""
         try:
             selected_date = self.calendar.selectedDate()
             date_str = selected_date.toString(Qt.DateFormat.ISODate)
             
-            # Get events for date
             events = self._event_manager.get_events_for_date(date_str)
-            
-            # Clear list
             self.event_list.clear()
             
             if not events:
@@ -202,42 +156,22 @@ class CalendarWidget(QWidget):
                 self.event_list.addItem(empty_item)
                 return
             
-            # Add events to list
+            # Add events to list with delete buttons
             for event in events:
-                item_text = f"• {event.title}"
-                if event.description:
-                    item_text += f"\n  {event.description}"
-                
-                item = QListWidgetItem(item_text)
-                self.event_list.addItem(item)
+                self._add_event_item(event)
             
         except Exception as e:
             print(f"Error updating event list: {e}")
     
     def _on_add_event(self) -> None:
-        """Handle add event button click."""
         selected_date = self.calendar.selectedDate()
         date_str = selected_date.toString(Qt.DateFormat.ISODate)
-        
         dialog = AddEventDialog(date_str, self)
-        
         if dialog.exec() == QDialog.DialogCode.Accepted:
             data = dialog.get_event_data()
-            
-            self._event_manager.create_event(
-                title=data['title'],
-                event_date=data['event_date'],
-                description=data.get('description')
-            )
+            self._event_manager.create_event(**data)
     
     def _on_event_created(self, date_str: str) -> None:
-        """
-        Handle event creation signal.
-        
-        Args:
-            date_str: Date of created event
-        """
-        # If event was created for currently visible month, reload
         try:
             year, month, _ = map(int, date_str.split('-'))
             if year == self._current_year and month == self._current_month:
@@ -245,89 +179,109 @@ class CalendarWidget(QWidget):
         except:
             pass
 
+    # --- NEW METHODS ADDED HERE ---
+    def _add_event_item(self, event: CalendarEvent) -> None:
+        """Add event item with delete button to list."""
+        item_widget = QWidget()
+        item_layout = QHBoxLayout(item_widget)
+        item_layout.setContentsMargins(5, 5, 5, 5)
+        
+        event_text_layout = QVBoxLayout()
+        title_label = QLabel(f"• {event.title}")
+        title_font = QFont()
+        title_font.setBold(True)
+        title_font.setPointSize(11)
+        title_label.setFont(title_font)
+        title_label.setStyleSheet("color: white;")
+        event_text_layout.addWidget(title_label)
+        
+        if event.description:
+            desc_label = QLabel(f"  {event.description}")
+            desc_label.setStyleSheet("color: #AAAAAA; font-size: 10px;")
+            desc_label.setWordWrap(True)
+            event_text_layout.addWidget(desc_label)
+        
+        delete_button = QPushButton("🗑")
+        delete_button.setFixedSize(35, 35)
+        delete_button.setStyleSheet("""
+            QPushButton {
+                font-size: 16px; background-color: #F44336; color: white;
+                border: none; border-radius: 4px;
+            }
+            QPushButton:hover { background-color: #D32F2F; }
+        """)
+        delete_button.clicked.connect(lambda: self._on_delete_event(event.id, event.title))
+        
+        item_layout.addLayout(event_text_layout)
+        item_layout.addStretch()
+        item_layout.addWidget(delete_button)
+        
+        list_item = QListWidgetItem()
+        list_item.setSizeHint(QSize(0, 60))
+        self.event_list.addItem(list_item)
+        self.event_list.setItemWidget(list_item, item_widget)
+
+    def _on_delete_event(self, event_id: int, event_title: str) -> None:
+        """Handle event deletion with confirmation."""
+        reply = QMessageBox.question(
+            self, "Confirm Deletion",
+            f"Permanently delete event:\n'{event_title}'?\n\nThis action cannot be undone.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+        
+        if reply != QMessageBox.StandardButton.Yes:
+            return
+        
+        try:
+            if self._event_manager.delete_event(event_id):
+                QMessageBox.information(self, "Event Deleted", f"Event '{event_title}' deleted.")
+            else:
+                QMessageBox.warning(self, "Deletion Failed", "The event may have already been deleted.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", str(e))
+            import traceback
+            traceback.print_exc()
+
 
 class AddEventDialog(QDialog):
-    """
-    Dialog for creating new calendar events.
-    
-    Allows user to specify event title, date, and description.
-    """
-    
+    # (AddTaskDialog logic remains unchanged as provided in calendar_widget.py)
     def __init__(self, default_date: str, parent=None):
-        """
-        Initialize add event dialog.
-        
-        Args:
-            default_date: Pre-filled date in ISO format
-            parent: Parent widget
-        """
         super().__init__(parent)
-        
         self._default_date = default_date
-        
         self.setWindowTitle("Add New Event")
         self.setModal(True)
         self.setMinimumWidth(400)
-        
         self._setup_ui()
     
     def _setup_ui(self) -> None:
-        """Initialize dialog UI."""
         layout = QVBoxLayout(self)
-        
-        # Form layout
         form = QFormLayout()
-        
-        # Title input
         self.title_input = QLineEdit()
         self.title_input.setPlaceholderText("e.g., 明天要交的作業, 回覆訊息")
         form.addRow("Event Title:", self.title_input)
-        
-        # Date input
         self.date_input = QDateEdit()
         self.date_input.setCalendarPopup(True)
-        
-        # Parse default date
         try:
-            year, month, day = map(int, self._default_date.split('-'))
-            self.date_input.setDate(QDate(year, month, day))
+            y, m, d = map(int, self._default_date.split('-'))
+            self.date_input.setDate(QDate(y, m, d))
         except:
             self.date_input.setDate(QDate.currentDate())
-        
         form.addRow("Event Date:", self.date_input)
-        
-        # Description input
         self.description_input = QTextEdit()
         self.description_input.setMaximumHeight(100)
-        self.description_input.setPlaceholderText("Optional description...")
         form.addRow("Description:", self.description_input)
-        
-        # Buttons
-        button_box = QDialogButtonBox(
-            QDialogButtonBox.StandardButton.Ok | 
-            QDialogButtonBox.StandardButton.Cancel
-        )
+        button_box = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         button_box.accepted.connect(self._validate_and_accept)
         button_box.rejected.connect(self.reject)
-        
-        # Assembly
         layout.addLayout(form)
         layout.addWidget(button_box)
     
     def _validate_and_accept(self) -> None:
-        """Validate inputs before accepting."""
-        if not self.title_input.text().strip():
-            return
-        
+        if not self.title_input.text().strip(): return
         self.accept()
     
     def get_event_data(self) -> dict:
-        """
-        Get entered event data.
-        
-        Returns:
-            Dictionary with title, event_date, description
-        """
         return {
             'title': self.title_input.text().strip(),
             'event_date': self.date_input.date().toString(Qt.DateFormat.ISODate),
