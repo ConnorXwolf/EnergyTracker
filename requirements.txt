@@ -1,0 +1,14 @@
+# Energy Tracker Application Dependencies
+# Install with: pip install -r requirements.txt
+
+# PyQt6 - GUI framework
+PyQt6>=6.4.0
+
+# Matplotlib - For chart visualization (optional enhancement)
+matplotlib>=3.7.0
+
+# Pydantic - Data validation
+pydantic>=2.0.0
+
+# Python-dateutil - Date handling utilities
+python-dateutil>=2.8.2
