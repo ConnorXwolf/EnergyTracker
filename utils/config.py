@@ -14,23 +14,23 @@ DATABASE_NAME: str = "energy_tracker.db"
 
 # Exercise category definitions with associated colors
 EXERCISE_CATEGORIES: Dict[str, Dict[str, Any]] = {
-    'physical': {
-        'color': '#FFD93D',  # Yellow
-        'color_bright': '#FFE066',
-        'text_color': '#000000',
-        'examples': ['拉筋', 'Running', 'Yoga', 'Walking']
-    },
-    'mental': {
-        'color': '#4A90E2',  # Blue
-        'color_bright': '#6BA3E8',
+    'cardio': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
         'text_color': '#FFFFFF',
-        'examples': ['Meditation', 'Reading', 'Journaling', 'Planning']
+        'examples': ['Running', 'Cycling', 'Swimming', 'Jump Rope']
     },
-    'sleepiness': {
-        'color': '#FF6B6B',  # Red
-        'color_bright': '#FF8E8E',
+    'muscle': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
         'text_color': '#FFFFFF',
-        'examples': ['Sleep Quality', 'Nap', 'Rest', 'Recovery']
+        'examples': ['Push-ups', 'Pull-ups', 'Squats', 'Weights']
+    },
+    'stretch': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
+        'text_color': '#FFFFFF',
+        'examples': ['Yoga', 'Stretching', '拉筋', 'Flexibility']
     }
 }
 
@@ -65,7 +65,7 @@ WIDGET_DIMENSIONS: Dict[str, int] = {
 DEFAULT_EXERCISES: List[Dict[str, Any]] = [
     {
         'name': '拉筋',
-        'category': 'physical',
+        'category': 'stretch',
         'target_value': 30,
         'unit': 'minutes'
     }
@@ -74,10 +74,11 @@ DEFAULT_EXERCISES: List[Dict[str, Any]] = [
 
 def get_category_color(category: str, over_achieved: bool = False) -> str:
     """
-    Retrieve color for exercise category.
+    Retrieve color for category (exercise or HP points).
     
     Args:
-        category: Exercise category ('cardio', 'strength', 'flexibility')
+        category: Category name ('cardio'/'muscle'/'stretch' for exercises,
+                  'physical'/'mental'/'sleepiness' for HP points)
         over_achieved: Whether to return brighter color for over-achievement
         
     Returns:
@@ -88,7 +89,16 @@ def get_category_color(category: str, over_achieved: bool = False) -> str:
     """
     try:
         color_key = 'color_bright' if over_achieved else 'color'
-        return EXERCISE_CATEGORIES[category][color_key]
+        
+        # Try exercise categories first
+        if category in EXERCISE_CATEGORIES:
+            return EXERCISE_CATEGORIES[category][color_key]
+        
+        # Try HP point categories
+        if category in HP_POINT_CATEGORIES:
+            return HP_POINT_CATEGORIES[category][color_key]
+        
+        raise KeyError(f"Invalid category: {category}")
     except KeyError as e:
         raise KeyError(f"Invalid category: {category}") from e
 
@@ -98,7 +108,7 @@ def get_text_color(category: str) -> str:
     Retrieve text color for category (ensures readability).
     
     Args:
-        category: Exercise category name
+        category: Category name (exercise or HP points)
         
     Returns:
         Hex color code for text overlay
@@ -107,7 +117,15 @@ def get_text_color(category: str) -> str:
         KeyError: If category is invalid
     """
     try:
-        return EXERCISE_CATEGORIES[category]['text_color']
+        # Try exercise categories first
+        if category in EXERCISE_CATEGORIES:
+            return EXERCISE_CATEGORIES[category]['text_color']
+        
+        # Try HP point categories
+        if category in HP_POINT_CATEGORIES:
+            return HP_POINT_CATEGORIES[category]['text_color']
+        
+        raise KeyError(f"Invalid category: {category}")
     except KeyError as e:
         raise KeyError(f"Invalid category: {category}") from e
 
@@ -123,3 +141,47 @@ def validate_unit(unit: str) -> bool:
         True if valid, False otherwise
     """
     return unit in VALID_UNITS
+# Exercise category definitions with associated colors
+EXERCISE_CATEGORIES: Dict[str, Dict[str, Any]] = {
+    'cardio': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
+        'text_color': '#FFFFFF',
+        'examples': ['Running', 'Cycling', 'Swimming', 'Jump Rope']
+    },
+    'muscle': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
+        'text_color': '#FFFFFF',
+        'examples': ['Push-ups', 'Pull-ups', 'Squats', 'Weights']
+    },
+    'stretch': {
+        'color': '#808080',  # Neutral gray (unused in UI)
+        'color_bright': '#999999',
+        'text_color': '#FFFFFF',
+        'examples': ['Yoga', 'Stretching', '拉筋', 'Flexibility']
+    }
+}
+
+# Manual HP points categories (for ring chart visualization)
+# These are SEPARATE from exercise categories
+HP_POINT_CATEGORIES: Dict[str, Dict[str, Any]] = {
+    'physical': {
+        'color': '#FFD93D',  # Yellow
+        'color_bright': '#FFE066',
+        'text_color': '#000000',
+        'display_name': 'Physical'
+    },
+    'mental': {
+        'color': '#4ECDC4',  # Cyan
+        'color_bright': '#6FE4DB',
+        'text_color': '#000000',
+        'display_name': 'Mental'
+    },
+    'sleepiness': {
+        'color': '#FF6B6B',  # Red
+        'color_bright': '#FF8E8E',
+        'text_color': '#FFFFFF',
+        'display_name': 'Sleepiness'
+    }
+}
