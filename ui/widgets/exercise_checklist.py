@@ -150,6 +150,8 @@ class ExerciseChecklistWidget(QWidget):
             
         except Exception as e:
             print(f"Error loading exercises: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _add_exercise_item(self, exercise: Exercise, log: ExerciseLog) -> None:
         """
@@ -402,21 +404,42 @@ class ExerciseChecklistWidget(QWidget):
             print(f"Error deleting exercise {exercise_id}: {e}")
             import traceback
             traceback.print_exc()
-            
-def _update_summary(
-    self,
-    exercises: List[Exercise],
-    logs: List[ExerciseLog]
-) -> None:
-    """
-    Update summary statistics display.
     
-    Args:
-        exercises: List of exercises
-        logs: List of exercise logs
-    """
-    if not exercises:
-        self.summary_label.setText("No exercises to display")
+    def _update_summary(
+        self,
+        exercises: List[Exercise],
+        logs: List[ExerciseLog]
+    ) -> None:
+        """
+        Update summary statistics display.
+        
+        Args:
+            exercises: List of exercises
+            logs: List of exercise logs
+        """
+        if not exercises:
+            self.summary_label.setText("No exercises to display")
+            self.summary_label.setStyleSheet("""
+                QLabel {
+                    font-size: 14px;
+                    color: #AAAAAA;
+                    padding: 10px;
+                    background-color: #2D2D2D;
+                    border-radius: 3px;
+                }
+            """)
+            return
+        
+        completed = sum(1 for log in logs if log.completed)
+        total = len(exercises)
+        completion_pct = (completed / total * 100) if total > 0 else 0
+        
+        total_actual = sum(log.actual_value for log in logs)
+        total_target = sum(log.target_value for log in logs)
+        
+        summary_text = f"完成率 ({completion_pct:.0f}%)  |  總進度: {total_actual}/{total_target}"
+        
+        self.summary_label.setText(summary_text)
         self.summary_label.setStyleSheet("""
             QLabel {
                 font-size: 14px;
@@ -426,28 +449,7 @@ def _update_summary(
                 border-radius: 3px;
             }
         """)
-        return
     
-    completed = sum(1 for log in logs if log.completed)
-    total = len(exercises)
-    completion_pct = (completed / total * 100) if total > 0 else 0
-    
-    total_actual = sum(log.actual_value for log in logs)
-    total_target = sum(log.target_value for log in logs)
-    
-    summary_text = f"完成率 ({completion_pct:.0f}%)  |  總進度: {total_actual}/{total_target}"
-    
-    self.summary_label.setText(summary_text)
-    self.summary_label.setStyleSheet("""
-        QLabel {
-            font-size: 14px;
-            color: #AAAAAA;
-            padding: 10px;
-            background-color: #2D2D2D;
-            border-radius: 3px;
-        }
-    """)
-
     def set_date(self, date: str) -> None:
         """
         Change displayed date.
@@ -678,10 +680,10 @@ class AddExerciseDialog(QDialog):
         
         # Name input
         self.name_input = QLineEdit()
-        self.name_input.setPlaceholderText("e.g., Push-ups, Running")
+        self.name_input.setPlaceholderText("e.g., Push-ups, Running, Meditation")
         form.addRow("Exercise Name:", self.name_input)
         
-        # Category selection
+        # Category selection (FIXED: Updated to new category system)
         self.category_combo = QComboBox()
         self.category_combo.addItems(['cardio', 'muscle', 'stretch'])
         form.addRow("Category:", self.category_combo)
@@ -713,7 +715,11 @@ class AddExerciseDialog(QDialog):
     def _validate_and_accept(self) -> None:
         """Validate inputs before accepting."""
         if not self.name_input.text().strip():
-            # Could show error message here
+            QMessageBox.warning(
+                self,
+                "Validation Error",
+                "Exercise name cannot be empty."
+            )
             return
         
         self.accept()
