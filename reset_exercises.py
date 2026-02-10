@@ -48,11 +48,11 @@ def main():
         
         print()
         print("Creating new default exercise...")
-        
+       
         # Create new default: 拉筋
         exercise_id = em.create_exercise(
             name='拉筋',
-            category='physical',
+            category='stretch',  # VALID
             target_value=30,
             unit='minutes'
         )
