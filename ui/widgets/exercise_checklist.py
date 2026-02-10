@@ -59,7 +59,7 @@ class ExerciseChecklistWidget(QWidget):
         # Header section (14pt bold)
         header_layout = QHBoxLayout()
         
-        title_label = QLabel("每日運動 (Daily Exercises)")
+        title_label = QLabel("Daily Exercises")
         title_font = QFont()
         title_font.setPointSize(14)
         title_font.setBold(True)
@@ -214,7 +214,7 @@ class ExerciseChecklistWidget(QWidget):
         )
         
         # Delete button (trash icon)
-        delete_button = QPushButton("🗑")
+        delete_button = QPushButton("X")
         delete_button.setMaximumWidth(40)
         delete_button.setMinimumHeight(30)
         delete_button.setStyleSheet("""
