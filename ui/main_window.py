@@ -135,9 +135,9 @@ class MainWindow(QMainWindow):
         self.ring_chart = RingChartWidget(self._exercise_manager)
         self.ring_chart.setFixedSize(400, 400)
         
-        # Calendar (expanded to red line)
-        self.calendar = CalendarWidget(self._event_manager)
-        self.calendar.setFixedWidth(850)  # Expanded to reach red line
+        # Calendar (expanded to red line) - NOW WITH TASK INTEGRATION
+        self.calendar = CalendarWidget(self._event_manager, self._task_manager)
+        self.calendar.setFixedWidth(1050)
         
         top_layout.addWidget(self.ring_chart)
         top_layout.addWidget(self.calendar)
@@ -434,86 +434,82 @@ class MainWindow(QMainWindow):
             date_str: Date in ISO format (YYYY-MM-DD)
         """
         try:
+            print(f"[MainWindow] _update_task_summary_for_date called with: {date_str}")
+            
             # Clear existing checkboxes
             while self.task_checklist_layout.count():
                 child = self.task_checklist_layout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
             
-            # Get tasks for specific date from database
-            from database import DatabaseManager
-            db = DatabaseManager()
-            
-            # Query tasks for this specific date
-            tasks = db.fetch_all("""
-                SELECT id, title, is_completed, category
-                FROM tasks
-                WHERE date = ?
-                ORDER BY is_completed ASC, id DESC
-            """, (date_str,))
+            # Get tasks for specific date from TaskManager
+            try:
+                tasks = self._task_manager.get_tasks_by_date(date_str)
+                print(f"[MainWindow] Loaded {len(tasks)} tasks for {date_str}")
+            except Exception as e:
+                print(f"[MainWindow] ERROR fetching tasks: {e}")
+                import traceback
+                traceback.print_exc()
+                error_label = QLabel(f"Error loading tasks")
+                error_label.setStyleSheet("color: #FF6B6B; font-size: 12px;")
+                self.task_checklist_layout.addWidget(error_label)
+                return
             
             if not tasks:
                 no_task_label = QLabel(f"No tasks for {date_str}")
-                no_task_label.setStyleSheet("""
-                    QLabel {
-                        font-size: 14px;
-                        color: #AAAAAA;
-                        padding: 5px;
-                    }
-                """)
+                no_task_label.setStyleSheet("color: #AAAAAA; font-size: 12px;")
                 self.task_checklist_layout.addWidget(no_task_label)
                 return
             
             # Create checkbox for each task
             for task in tasks:
-                task_id, title, is_completed, category = task
-                
-                display_text = f"{title}"
-                if category:
-                    display_text += f" ({category})"
-                
-                checkbox = QCheckBox(display_text)
-                checkbox.setChecked(bool(is_completed))
-                
-                # White checkbox styling, 14pt font
-                checkbox.setStyleSheet("""
-                    QCheckBox {
-                        font-size: 14px;
-                        color: white;
-                    }
-                    QCheckBox::indicator {
-                        width: 18px;
-                        height: 18px;
-                        border: 2px solid white;
-                        border-radius: 3px;
-                        background-color: transparent;
-                    }
-                    QCheckBox::indicator:checked {
-                        background-color: #4ECDC4;
-                        border: 2px solid white;
-                    }
-                """)
-                
-                # Connect to update handler for current date
-                checkbox.stateChanged.connect(
-                    lambda state, tid=task_id: self._on_task_toggled_on_home(tid, state)
-                )
-                
-                self.task_checklist_layout.addWidget(checkbox)
+                try:
+                    display_text = f"{task.title}"
+                    if task.category:
+                        display_text += f" ({task.category})"
+                    
+                    checkbox = QCheckBox(display_text)
+                    checkbox.setChecked(task.is_completed)
+                    
+                    # White checkbox styling, 14pt font
+                    checkbox.setStyleSheet("""
+                        QCheckBox {
+                            font-size: 14px;
+                            color: white;
+                        }
+                        QCheckBox::indicator {
+                            width: 18px;
+                            height: 18px;
+                            border: 2px solid white;
+                            border-radius: 3px;
+                            background-color: transparent;
+                        }
+                        QCheckBox::indicator:checked {
+                            background-color: #4ECDC4;
+                            border: 2px solid white;
+                        }
+                    """)
+                    
+                    # Connect to update handler for current date
+                    checkbox.stateChanged.connect(
+                        lambda state, tid=task.id: self._on_task_toggled_on_home(tid, state)
+                    )
+                    
+                    self.task_checklist_layout.addWidget(checkbox)
+                    print(f"[MainWindow] Added checkbox for task: {task.title}")
+                    
+                except Exception as e:
+                    print(f"[MainWindow] ERROR creating checkbox for task {task.id}: {e}")
+                    import traceback
+                    traceback.print_exc()
             
         except Exception as e:
-            print(f"Error updating task summary for {date_str}: {e}")
+            print(f"[MainWindow] ERROR in _update_task_summary_for_date: {e}")
             import traceback
             traceback.print_exc()
-            no_task_label = QLabel("Error loading tasks")
-            no_task_label.setStyleSheet("""
-                QLabel {
-                    font-size: 14px;
-                    color: #F44336;
-                    padding: 5px;
-                }
-            """)
-            self.task_checklist_layout.addWidget(no_task_label)
+            error_label = QLabel("Error loading tasks")
+            error_label.setStyleSheet("color: #FF6B6B; font-size: 12px;")
+            self.task_checklist_layout.addWidget(error_label)
     
     def _update_exercise_summary(self) -> None:
         """Update exercise checklist display with checkboxes for TODAY."""
@@ -527,6 +523,8 @@ class MainWindow(QMainWindow):
             date_str: Date in ISO format (YYYY-MM-DD)
         """
         try:
+            print(f"[MainWindow] _update_exercise_summary_for_date called with: {date_str}")
+            
             # Clear existing checkboxes
             while self.exercise_checklist_layout.count():
                 child = self.exercise_checklist_layout.takeAt(0)
@@ -535,16 +533,11 @@ class MainWindow(QMainWindow):
             
             # Get exercises for specified date
             exercises_data = self._exercise_manager.get_logs_for_date(date_str)
+            print(f"[MainWindow] Loaded {len(exercises_data)} exercises for {date_str}")
             
             if not exercises_data:
                 no_exercise_label = QLabel(f"No exercises for {date_str}")
-                no_exercise_label.setStyleSheet("""
-                    QLabel {
-                        font-size: 14px;
-                        color: #AAAAAA;
-                        padding: 5px;
-                    }
-                """)
+                no_exercise_label.setStyleSheet("color: #AAAAAA; font-size: 12px;")
                 self.exercise_checklist_layout.addWidget(no_exercise_label)
                 return
             
@@ -578,17 +571,14 @@ class MainWindow(QMainWindow):
                 )
                 
                 self.exercise_checklist_layout.addWidget(checkbox)
+                print(f"[MainWindow] Added checkbox for exercise: {exercise.name}")
                 
         except Exception as e:
-            print(f"Error updating exercise summary: {e}")
-            no_exercise_label = QLabel("No exercises")
-            no_exercise_label.setStyleSheet("""
-                QLabel {
-                    font-size: 14px;
-                    color: #F44336;
-                    padding: 5px;
-                }
-            """)
+            print(f"[MainWindow] ERROR in _update_exercise_summary_for_date: {e}")
+            import traceback
+            traceback.print_exc()
+            no_exercise_label = QLabel("Error loading exercises")
+            no_exercise_label.setStyleSheet("color: #FF6B6B; font-size: 12px;")
             self.exercise_checklist_layout.addWidget(no_exercise_label)
     
     def _on_home_exercise_toggled(self, exercise_id: int, state: int) -> None:
@@ -613,10 +603,21 @@ class MainWindow(QMainWindow):
         try:
             is_checked = (state == Qt.CheckState.Checked.value)
             
-            # Update completion status for specified date
-            self._exercise_manager.update_exercise_completion(
+            # Get current exercise to get target_value
+            exercise = self._exercise_manager.get_exercise_by_id(exercise_id)
+            if not exercise:
+                print(f"Exercise {exercise_id} not found")
+                return
+            
+            # Update completion status
+            # If checking: set actual_value = target_value
+            # If unchecking: set actual_value = 0
+            actual_value = exercise.target_value if is_checked else 0
+            
+            self._exercise_manager.update_progress(
                 exercise_id,
                 date_str,
+                actual_value,
                 is_checked
             )
             
@@ -629,6 +630,8 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             print(f"Error toggling exercise for {date_str}: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _on_task_toggled_on_home(self, task_id: int, state: int) -> None:
         """
@@ -758,7 +761,7 @@ class MainWindow(QMainWindow):
         self.ring_chart.setFixedSize(scaled_size, scaled_size)
         
         # Scale calendar width (expanded to red line)
-        base_calendar_width = 850  # Updated to match red line
+        base_calendar_width = 1050  # Updated to match red line
         scaled_width = int(base_calendar_width * scale)
         self.calendar.setFixedWidth(scaled_width)
         
