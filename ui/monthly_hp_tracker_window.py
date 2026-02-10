@@ -106,7 +106,7 @@ class MonthlyHPTrackerWindow(QDialog):
         
         self.month_label = QLabel()
         month_font = QFont()
-        month_font.setPointSize(14)
+        month_font.setPointSize(16)
         self.month_label.setFont(month_font)
         self.month_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._update_month_label()
@@ -141,7 +141,7 @@ class MonthlyHPTrackerWindow(QDialog):
         
         detail_header = QLabel("Selected Day Details")
         detail_header_font = QFont()
-        detail_header_font.setPointSize(12)
+        detail_header_font.setPointSize(14)
         detail_header_font.setBold(True)
         detail_header.setFont(detail_header_font)
         
