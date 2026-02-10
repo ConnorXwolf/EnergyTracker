@@ -30,7 +30,7 @@ EXERCISE_CATEGORIES: Dict[str, Dict[str, Any]] = {
         'color': '#808080',  # Neutral gray
         'color_bright': '#999999',
         'text_color': '#FFFFFF',
-        'examples': ['Yoga', 'Stretching', '拉筋', 'Flexibility']
+        'examples': ['Yoga', 'Stretching', 'Flexibility']
     }
 }
 
@@ -87,7 +87,7 @@ WIDGET_DIMENSIONS: Dict[str, int] = {
 # Default exercises for new installations
 DEFAULT_EXERCISES: List[Dict[str, Any]] = [
     {
-        'name': '拉筋',
+        'name': 'Stretch',
         'category': 'stretch',
         'target_value': 30,
         'unit': 'minutes'
