@@ -189,7 +189,7 @@ class RingChartWidget(QWidget):
         )
         
         # Draw legend
-        self._draw_legend(painter, 20, height - 100)
+        self._draw_legend(painter, 175, height - 200)
     
     def _draw_segments(
         self,
@@ -501,7 +501,7 @@ class RingChartWidget(QWidget):
             return
         
         font = QFont()
-        font.setPointSize(10)
+        font.setPointSize(15)
         painter.setFont(font)
         
         current_y = y
@@ -512,7 +512,7 @@ class RingChartWidget(QWidget):
             painter.fillRect(int(x), int(current_y), 15, 15, color)
             
             # Label with actual points (not percentage)
-            painter.setPen(QColor('#FFFFFF'))
+            painter.setPen(QColor("#FFFFFF"))
             actual_points = segment.get('actual_points', 0)
             text = f"{segment['name']}: {actual_points} pts"
             painter.drawText(
