@@ -23,7 +23,7 @@ from .settings_dialog import SettingsDialog
 from .task_manager_window import TaskManagerWindow
 from .exercise_manager_window import ExerciseManagerWindow
 from utils import APP_NAME, APP_VERSION, DEFAULT_EXERCISES, get_today, SettingsManager
-
+from .monthly_hp_tracker_window import MonthlyHPTrackerWindow
 
 class MainWindow(QMainWindow):
     """
@@ -276,14 +276,14 @@ class MainWindow(QMainWindow):
         report_action.triggered.connect(self._generate_daily_report)
         data_menu.addAction(report_action)
         
-        # ==================== MORE MENU (NEW) ====================
+        # ==================== MORE MENU (UPDATED) ====================
         more_menu = menubar.addMenu("More")
-        
-        # Placeholder action to indicate menu is intentionally empty
-        placeholder_action = QAction("(No items yet)", self)
-        placeholder_action.setEnabled(False)
-        placeholder_action.setToolTip("Future features will be added here")
-        more_menu.addAction(placeholder_action)
+
+        # Monthly HP Tracker action
+        hp_tracker_action = QAction("Monthly HP Tracker", self)
+        hp_tracker_action.setShortcut("Ctrl+M")
+        hp_tracker_action.triggered.connect(self._open_monthly_hp_tracker)
+        more_menu.addAction(hp_tracker_action)
         # =========================================================
         
         # Settings menu (between Data and Help)
@@ -384,7 +384,30 @@ class MainWindow(QMainWindow):
             print(f"Error loading date data: {e}")
             import traceback
             traceback.print_exc()
-    
+            
+    def _open_monthly_hp_tracker(self) -> None:
+        """Open Monthly HP Tracker window."""
+        try:
+            from datetime import date
+            today = date.today()
+            
+            dialog = MonthlyHPTrackerWindow(
+                parent=self,
+                initial_year=today.year,
+                initial_month=today.month
+            )
+            dialog.exec()
+        
+        except Exception as e:
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Failed to open HP Tracker:\n{str(e)}"
+            )
+            print(f"Error opening HP tracker: {e}")
+            import traceback
+            traceback.print_exc()
+
     def _save_daily_points(self) -> None:
         """Save daily points input for current selected date and update ring chart."""
         physical = self.physical_input.value()
