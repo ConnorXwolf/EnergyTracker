@@ -1,14 +1,15 @@
 """
-Energy Tracker application entry point.
+Energy Tracker Application Entry Point.
 
-Initializes the PyQt6 application and launches the main window with
-proper path handling for both development and PyInstaller frozen environments.
+Initializes application paths, creates Qt application with global
+font settings, and launches the main window.
 """
 
 import sys
 from pathlib import Path
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
 
 from ui import MainWindow
 from utils import APP_NAME
@@ -16,78 +17,47 @@ from utils import APP_NAME
 
 def get_base_path() -> Path:
     """
-    Get the application's base directory path.
+    Get base application path (handles PyInstaller bundling).
     
     Returns:
-        Path: Base directory - _MEIPASS in frozen mode, script directory otherwise
-    
-    Notes:
-        PyInstaller extracts bundled files to sys._MEIPASS temporary directory.
-        This path should be used for read-only resources (icons, templates).
+        Path: Base directory path
     """
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        # Frozen/Packaged environment
-        return Path(sys._MEIPASS)
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        return Path(sys.executable).parent
     else:
-        # Development environment
-        return Path(__file__).parent.resolve()
+        # Running as script
+        return Path(__file__).parent
 
 
 def get_data_path() -> Path:
     """
-    Get the user data directory path for persistent storage.
+    Get data directory path for database and reports.
     
     Returns:
-        Path: Directory for database and user-generated files
-    
-    Notes:
-        Database and history files must be stored outside the bundled
-        executable to persist across application restarts.
+        Path: Data directory path
     """
-    if getattr(sys, 'frozen', False):
-        # Frozen: Use executable's parent directory
-        return Path(sys.executable).parent / 'data'
-    else:
-        # Development: Use project root
-        return Path(__file__).parent / 'data'
+    return get_base_path() / "data"
 
 
 def initialize_application_directories() -> None:
     """
-    Create required directory structure for application data.
+    Create required application directories if they don't exist.
     
     Creates:
-        - data/: Root data directory
-        - data/history/: Historical reports storage
-    
-    Raises:
-        OSError: If directory creation fails due to permission or disk issues
-        
-    Notes:
-        Uses exist_ok=True to safely handle pre-existing directories.
+        - data/: For database storage
+        - data/history/: For monthly reports
     """
-    try:
-        data_dir = get_data_path()
-        history_dir = data_dir / 'history'
-        
-        # Create directories with proper permissions
-        history_dir.mkdir(parents=True, exist_ok=True)
-        
-        print(f"Data directory initialized: {data_dir}")
-        
-    except OSError as e:
-        error_msg = f"Failed to initialize application directories: {e}"
-        print(error_msg, file=sys.stderr)
-        raise RuntimeError(error_msg) from e
-    except Exception as e:
-        error_msg = f"Unexpected error during directory initialization: {e}"
-        print(error_msg, file=sys.stderr)
-        raise RuntimeError(error_msg) from e
+    data_path = get_data_path()
+    data_path.mkdir(exist_ok=True)
+    
+    history_path = data_path / "history"
+    history_path.mkdir(exist_ok=True)
 
 
 def configure_application_paths() -> None:
     """
-    Configure global path constants for the application.
+    Configure global application paths for cross-module access.
     
     Notes:
         This function should be called before importing modules that
@@ -99,12 +69,45 @@ def configure_application_paths() -> None:
     os.environ['APP_DATA_PATH'] = str(get_data_path())
 
 
+def apply_global_font_settings(app: QApplication) -> None:
+    """
+    Apply persistent font settings to entire application.
+    
+    This ensures all widgets (including dynamically created ones)
+    inherit the correct font configuration without needing
+    individual widget-level application.
+    
+    Args:
+        app: QApplication instance to apply settings to
+    """
+    from utils import SettingsManager
+    
+    settings = SettingsManager()
+    scale = settings.get_ui_scale()
+    text_offset = settings.get_text_size_offset()
+    
+    # Create global font with user settings
+    base_font = QFont()
+    base_font.setFamily("Segoe UI")  # Professional, widely available font
+    
+    base_size = 12
+    adjusted_size = int(base_size * scale) + text_offset
+    adjusted_size = max(8, adjusted_size)  # Enforce minimum readable size
+    
+    base_font.setPointSize(adjusted_size)
+    
+    # Apply to application - affects ALL widgets
+    app.setFont(base_font)
+    
+    print(f"[Settings] Global font applied: {adjusted_size}pt (scale={scale:.2f}, offset={text_offset:+d})")
+
+
 def main() -> int:
     """
     Application entry point.
     
-    Initializes Qt application, configures paths, creates main window,
-    and starts the event loop.
+    Initializes Qt application, configures paths, applies global settings,
+    creates main window, and starts the event loop.
     
     Returns:
         int: Exit code from Qt application (0 for success)
@@ -119,7 +122,7 @@ def main() -> int:
         # Phase 2: Initialize directory structure
         initialize_application_directories()
         
-        # Phase 3: Configure Qt application
+        # Phase 3: Configure Qt for high DPI displays
         QApplication.setHighDpiScaleFactorRoundingPolicy(
             Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
         )
@@ -128,11 +131,15 @@ def main() -> int:
         app = QApplication(sys.argv)
         app.setApplicationName(APP_NAME)
         
-        # Phase 5: Create and display main window
+        # Phase 5: Apply global font settings BEFORE window creation
+        # This ensures all widgets inherit correct fonts
+        apply_global_font_settings(app)
+        
+        # Phase 6: Create and display main window
         window = MainWindow()
         window.show()
         
-        # Phase 6: Start event loop
+        # Phase 7: Start event loop
         return app.exec()
         
     except RuntimeError as e:
