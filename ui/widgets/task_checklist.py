@@ -54,7 +54,7 @@ class TaskChecklistWidget(QWidget):
         
         # Header section
         header_layout = QHBoxLayout()
-        title_label = QLabel("任務清單 (Task Checklist)")
+        title_label = QLabel("Task Checklist")
         title_font = QFont()
         title_font.setPointSize(14)
         title_font.setBold(True)
