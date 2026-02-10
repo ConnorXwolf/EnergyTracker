@@ -1,7 +1,7 @@
 """
 Database reset script for Energy Tracker.
 
-Deletes all existing exercises and resets to new default (拉筋).
+Deletes all existing exercises and resets to new default (Stretch).
 Run this after updating to the new version with Physical/Mental/Sleepiness categories.
 
 Usage:
@@ -49,16 +49,16 @@ def main():
         print()
         print("Creating new default exercise...")
        
-        # Create new default: 拉筋
+        # Create new default: Stretch
         exercise_id = em.create_exercise(
-            name='拉筋',
+            name='Stretch',
             category='stretch',  # VALID
             target_value=30,
             unit='minutes'
         )
         
         if exercise_id:
-            print(f"  Created: 拉筋 (30 minutes/day)")
+            print(f"  Created: Stretch (30 minutes/day)")
         
         print()
         print("=" * 60)
