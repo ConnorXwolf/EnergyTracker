@@ -131,6 +131,50 @@ class TaskManager(QObject):
             traceback.print_exc()
             return []
     
+    def get_tasks_by_month(self, year: int, month: int) -> List[Task]:
+        """
+        Retrieve tasks with due dates in specified month.
+        
+        Args:
+            year: Target year
+            month: Target month (1-12)
+            
+        Returns:
+            List of Task models with due_date in the month
+            
+        Raises:
+            ValueError: If month is invalid
+        """
+        try:
+            return self._db.get_tasks_by_month(year, month)
+        except ValueError as e:
+            print(f"Invalid month parameter: {e}")
+            raise
+        except Exception as e:
+            print(f"Error retrieving tasks for {year}-{month:02d}: {e}")
+            return []
+    
+    def get_tasks_with_due_dates_for_month(self, year: int, month: int) -> List[Task]:
+        """
+        Retrieve only tasks that have due dates in specified month.
+        
+        Filters out tasks without due_date field populated.
+        
+        Args:
+            year: Target year
+            month: Target month (1-12)
+            
+        Returns:
+            List of Task models with non-null due_date in month
+        """
+        try:
+            all_tasks = self._db.get_tasks_by_month(year, month)
+            # Filter tasks that actually have due dates
+            return [task for task in all_tasks if task.due_date is not None]
+        except Exception as e:
+            print(f"Error retrieving tasks with due dates: {e}")
+            return []
+    
     def get_task_groups(self) -> List[TaskGroup]:
         """
         Retrieve tasks organized into groups by category.
