@@ -24,18 +24,6 @@ This is the complete, high-fidelity **README.md** for your project. I have struc
 
 ---
 
-# 🔋 EnergyTracker
-
-### *A Personal Pacing Tool Built by a Developer with Fibromyalgia*
-
-## 🌟 The Story Behind the Project
-
-**EnergyTracker** was born from necessity. Living with **Fibromyalgia** and chronic illness means that "productivity" isn't just about getting things done—it's about managing a very limited supply of energy.
-
-This app is designed to help you practice **Pacing**. By treating your physical and mental energy like a video game "HP" (Health Points) system, you can visualize your capacity, avoid the "crash and burn" cycle, and keep a reliable record of your wellbeing for yourself and your doctors.
-
----
-
 ## 🎮 The HP System: Your Daily Stats
 
 The app uses three core metrics to determine your daily capacity. While the main screen shows a simplified ring, you can click **"More"** to see the full breakdown:
