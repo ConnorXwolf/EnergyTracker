@@ -247,7 +247,11 @@ class MainWindow(QMainWindow):
     def _create_menu_bar(self) -> None:
         """Create application menu bar."""
         menubar = self.menuBar()
-        
+
+        menu_font = QFont()
+        menu_font.setPointSize(16)
+        menubar.setFont(menu_font)
+
         # File menu
         file_menu = menubar.addMenu("File")
         
