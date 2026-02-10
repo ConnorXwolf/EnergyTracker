@@ -19,14 +19,14 @@ class Exercise(BaseModel):
     Attributes:
         id: Unique identifier (0 for unsaved exercises)
         name: Display name of the exercise
-        category: Classification (physical/mental/sleepiness)
+        category: Classification (cardio/muscle/stretch)
         color: Hex color code for UI visualization
         target_value: Daily goal quantity
         unit: Measurement unit for progress tracking
     """
     id: int = Field(default=0, ge=0)
     name: str = Field(min_length=1, max_length=100)
-    category: Literal['physical', 'mental', 'sleepiness']
+    category: Literal['cardio', 'muscle', 'stretch']
     color: str = Field(pattern=r'^#[0-9A-Fa-f]{6}$')
     target_value: int = Field(gt=0)
     unit: Literal['reps', 'sets', 'minutes', 'km', 'hours']
