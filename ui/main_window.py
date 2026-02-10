@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
                 background-color: #4ECDC4;
                 color: #000000;
                 border: none;
-                padding: 8px 16px;
+                padding: 14px 16px;
                 border-radius: 4px;
                 font-weight: bold;
             }
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
         # Header with title only (date label removed)
         points_title = QLabel("Daily Points")
         points_title_font = QFont()
-        points_title_font.setPointSize(14)
+        points_title_font.setPointSize(16)
         points_title_font.setBold(True)
         points_title.setFont(points_title_font)
         points_layout.addWidget(points_title)
@@ -508,10 +508,10 @@ class MainWindow(QMainWindow):
                     checkbox = QCheckBox(display_text)
                     checkbox.setChecked(task.is_completed)
                     
-                    # White checkbox styling, 14pt font
+                    # White checkbox styling, 16pt font
                     checkbox.setStyleSheet("""
                         QCheckBox {
-                            font-size: 14px;
+                            font-size: 16px;
                             color: white;
                         }
                         QCheckBox::indicator {
@@ -583,10 +583,10 @@ class MainWindow(QMainWindow):
                 checkbox = QCheckBox(f"{exercise.name} - {log.actual_value}/{log.target_value} {log.unit}")
                 checkbox.setChecked(log.completed)
                 
-                # White checkbox styling, 14pt font
+                # White checkbox styling, 16pt font
                 checkbox.setStyleSheet("""
                     QCheckBox {
-                        font-size: 14px;
+                        font-size: 16px;
                         color: white;
                     }
                     QCheckBox::indicator {
@@ -757,9 +757,9 @@ class MainWindow(QMainWindow):
         
         # Apply global font size adjustment
         app_font = self.font()
-        base_size = 12  # Base font size
+        base_size = 14  # Base font size
         new_size = int(base_size * scale) + text_offset
-        app_font.setPointSize(max(8, new_size))  # Minimum 8pt
+        app_font.setPointSize(max(14, new_size))  # Minimum 14pt
         self.setFont(app_font)
         
         # Apply to all child widgets recursively
@@ -769,12 +769,12 @@ class MainWindow(QMainWindow):
             
             # Preserve relative sizes for headers/titles
             if widget_font.pointSize() > 12:
-                widget_base_size = 14
+                widget_base_size = 16
             elif widget_font.pointSize() > 10:
-                widget_base_size = 12
+                widget_base_size = 14
             
             adjusted_size = int(widget_base_size * scale) + text_offset
-            widget_font.setPointSize(max(8, adjusted_size))
+            widget_font.setPointSize(max(14, adjusted_size))
             widget.setFont(widget_font)
         
         # Scale widget sizes
