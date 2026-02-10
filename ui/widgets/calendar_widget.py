@@ -59,8 +59,8 @@ class CalendarWidget(QWidget):
         # Left side: Calendar
         self.calendar = QCalendarWidget()
         self.calendar.setGridVisible(True)
-        self.calendar.setMinimumSize(500, 350)
-        self.calendar.setMaximumWidth(550)
+        self.calendar.setMinimumSize(700, 350)
+        self.calendar.setMaximumWidth(750)
         
         # Right side: Event list section
         right_layout = QVBoxLayout()
@@ -69,17 +69,17 @@ class CalendarWidget(QWidget):
         list_header = QLabel("Event & Task")  # 修改標題
         list_header_font = QFont()
         list_header_font.setBold(True)
-        list_header_font.setPointSize(14)  # 增加字體大小
+        list_header_font.setPointSize(16)  # 增加字體大小
         list_header.setFont(list_header_font)
 
         self.event_list = QListWidget()
-        self.event_list.setMinimumWidth(400)  # 從 250 增加到 400
-        self.event_list.setMaximumWidth(500)  # 從 300 增加到 500
+        self.event_list.setMinimumWidth(550)  # 從 250 增加到 400
+        self.event_list.setMaximumWidth(700)  # 從 300 增加到 500
         self.event_list.setMinimumHeight(400)  # 新增：設置最小高度
         
         # Add event button
         self.add_event_button = QPushButton("Add Event")
-        self.add_event_button.setMaximumWidth(150)
+        self.add_event_button.setMaximumWidth(300)
         
         # Assemble right side
         right_layout.addWidget(list_header)
@@ -203,7 +203,7 @@ class CalendarWidget(QWidget):
                 highlight_format.setForeground(QColor('#000000'))
             elif highlight_type == 'task':
                 # Orange background for tasks only
-                highlight_format.setBackground(QColor('#FFA500'))
+                highlight_format.setBackground(QColor("#FFB700"))
                 highlight_format.setForeground(QColor('#000000'))
             elif highlight_type == 'both':
                 # Purple background for mixed dates
@@ -300,22 +300,22 @@ class CalendarWidget(QWidget):
         title_label = QLabel(f"📅 {event.title}")
         title_font = QFont()
         title_font.setBold(True)
-        title_font.setPointSize(11)
+        title_font.setPointSize(14)
         title_label.setFont(title_font)
         title_label.setStyleSheet("color: white;")
         event_text_layout.addWidget(title_label)
         
         if event.description:
             desc_label = QLabel(f"  {event.description}")
-            desc_label.setStyleSheet("color: #AAAAAA; font-size: 10px;")
+            desc_label.setStyleSheet("color: #AAAAAA; font-size: 16px;")
             desc_label.setWordWrap(True)
             event_text_layout.addWidget(desc_label)
         
-        delete_button = QPushButton("🗑")
+        delete_button = QPushButton("X")
         delete_button.setFixedSize(35, 35)
         delete_button.setStyleSheet("""
             QPushButton {
-                font-size: 16px; background-color: #F44336; color: white;
+                font-size: 18px; background-color: #F44336; color: white;
                 border: none; border-radius: 4px;
             }
             QPushButton:hover { background-color: #D32F2F; }
@@ -362,23 +362,23 @@ class CalendarWidget(QWidget):
         title_label = QLabel(display_text)
         title_font = QFont()
         title_font.setBold(True)
-        title_font.setPointSize(11)
+        title_font.setPointSize(16)
         title_label.setFont(title_font)
         
         # Strikethrough if completed
         if task.is_completed:
             title_label.setStyleSheet("color: #888888; text-decoration: line-through;")
         else:
-            title_label.setStyleSheet("color: #FFA500;")  # Orange for pending tasks
+            title_label.setStyleSheet("color: #FFE153;")  # Orange for pending tasks
         
         task_text_layout.addWidget(title_label)
         
         # Delete button for tasks
-        delete_button = QPushButton("🗑")
+        delete_button = QPushButton("X")
         delete_button.setFixedSize(35, 35)
         delete_button.setStyleSheet("""
             QPushButton {
-                font-size: 16px; background-color: #F44336; color: white;
+                font-size: 18px; background-color: #F44336; color: white;
                 border: none; border-radius: 4px;
             }
             QPushButton:hover { background-color: #D32F2F; }
@@ -504,7 +504,7 @@ class AddEventDialog(QDialog):
         form.addRow("Event Date:", self.date_input)
         
         self.description_input = QTextEdit()
-        self.description_input.setMaximumHeight(100)
+        self.description_input.setMaximumHeight(200)
         form.addRow("Description:", self.description_input)
         
         button_box = QDialogButtonBox(
