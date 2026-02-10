@@ -56,7 +56,7 @@ class TaskChecklistWidget(QWidget):
         header_layout = QHBoxLayout()
         title_label = QLabel("Task Checklist")
         title_font = QFont()
-        title_font.setPointSize(14)
+        title_font.setPointSize(16)
         title_font.setBold(True)
         title_label.setFont(title_font)
         header_layout.addWidget(title_label)
@@ -71,7 +71,7 @@ class TaskChecklistWidget(QWidget):
         self.list_widget.customContextMenuRequested.connect(self._show_context_menu)
         
         list_font = QFont()
-        list_font.setPointSize(14)
+        list_font.setPointSize(16)
         self.list_widget.setFont(list_font)
         
         # Style for white checkboxes
@@ -227,7 +227,7 @@ class TaskChecklistWidget(QWidget):
         name_label.setFont(QFont("", 15, QFont.Weight.Bold))
         
         progress_label = QLabel(group.format_progress())
-        progress_label.setStyleSheet("color: #AAAAAA; font-size: 14px;")
+        progress_label.setStyleSheet("color: #AAAAAA; font-size: 16px;")
         
         header_layout.addWidget(name_label)
         header_layout.addStretch()
@@ -243,7 +243,7 @@ class TaskChecklistWidget(QWidget):
         checkbox = QCheckBox(task.title)
         checkbox.setChecked(task.is_completed)
         checkbox.setStyleSheet("""
-            QCheckBox { padding-left: 20px; font-size: 14px; color: white; }
+            QCheckBox { padding-left: 20px; font-size: 16px; color: white; }
             QCheckBox::indicator { width: 18px; height: 18px; border: 2px solid white; border-radius: 3px; }
             QCheckBox::indicator:checked { background-color: #4ECDC4; }
         """)
