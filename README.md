@@ -81,7 +81,9 @@ Chronic illness often comes with visual fatigue or "brain fog." You can customiz
 * **UI Scaling**: Go to **Settings** to increase the overall scale of the interface (e.g., 1.2x or 1.5x) to make buttons easier to hit.
 * **Text Size**: Independently adjust the font size to ensure all instructions and labels are clear and readable without strain.
 
-### 🔒 Privacy & Safety
+---
+
+## 🔒 Privacy & Safety
 
 * **100% Offline**: Your health data is yours alone. It is stored in a file named `energy_tracker.db` on your computer. Nothing is ever uploaded to the internet.
 * **No Medical Advice**: This app is a tracking tool, not a doctor. Always listen to your body over the app’s numbers.
