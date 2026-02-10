@@ -56,12 +56,12 @@ class ExerciseChecklistWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.setSpacing(10)
         
-        # Header section (14pt bold)
+        # Header section (16pt bold)
         header_layout = QHBoxLayout()
         
         title_label = QLabel("Daily Exercises")
         title_font = QFont()
-        title_font.setPointSize(14)
+        title_font.setPointSize(16)
         title_font.setBold(True)
         title_label.setFont(title_font)
         
@@ -73,11 +73,11 @@ class ExerciseChecklistWidget(QWidget):
         self.list_widget.setSpacing(8)
         self.list_widget.setMinimumHeight(250)
         
-        # Summary footer (increase font size to 12pt)
+        # Summary footer (increase font size to 14pt)
         self.summary_label = QLabel()
         self.summary_label.setStyleSheet("""
             QLabel {
-                font-size: 12px;
+                font-size: 14px;
                 color: #AAAAAA;
                 padding: 10px;
                 background-color: #2D2D2D;
@@ -92,14 +92,14 @@ class ExerciseChecklistWidget(QWidget):
         self.add_button.setMinimumWidth(200)
         self.add_button.setMinimumHeight(50)
         add_button_font = QFont()
-        add_button_font.setPointSize(12)
+        add_button_font.setPointSize(14)
         self.add_button.setFont(add_button_font)
         
         self.refresh_button = QPushButton("Refresh")
         self.refresh_button.setMinimumWidth(200)
         self.refresh_button.setMinimumHeight(50)
         refresh_button_font = QFont()
-        refresh_button_font.setPointSize(12)
+        refresh_button_font.setPointSize(14)
         self.refresh_button.setFont(refresh_button_font)
         
         button_layout.addWidget(self.add_button)
@@ -172,10 +172,10 @@ class ExerciseChecklistWidget(QWidget):
         
         checkbox = QCheckBox(exercise.name)
         checkbox.setChecked(log.completed)
-        # White checkbox styling, 14pt font
+        # White checkbox styling, 16pt font
         checkbox.setStyleSheet("""
             QCheckBox {
-                font-size: 14px;
+                font-size: 16px;
                 font-weight: bold;
                 color: white;
             }
@@ -421,7 +421,7 @@ class ExerciseChecklistWidget(QWidget):
             self.summary_label.setText("No exercises to display")
             self.summary_label.setStyleSheet("""
                 QLabel {
-                    font-size: 14px;
+                    font-size: 16px;
                     color: #AAAAAA;
                     padding: 10px;
                     background-color: #2D2D2D;
@@ -442,7 +442,7 @@ class ExerciseChecklistWidget(QWidget):
         self.summary_label.setText(summary_text)
         self.summary_label.setStyleSheet("""
             QLabel {
-                font-size: 14px;
+                font-size: 16px;
                 color: #AAAAAA;
                 padding: 10px;
                 background-color: #2D2D2D;
@@ -503,7 +503,7 @@ class ProgressInputDialog(QDialog):
             }
             QLabel {
                 color: #FFFFFF;
-                font-size: 12px;
+                font-size: 14px;
             }
             QLineEdit, QSpinBox, QTextEdit {
                 background-color: #3D3D3D;
@@ -511,7 +511,7 @@ class ProgressInputDialog(QDialog):
                 border: 1px solid #555555;
                 border-radius: 3px;
                 padding: 5px;
-                font-size: 12px;
+                font-size: 14px;
             }
             QLineEdit:focus, QSpinBox:focus, QTextEdit:focus {
                 border: 1px solid #4ECDC4;
@@ -519,7 +519,7 @@ class ProgressInputDialog(QDialog):
             QSpinBox::up-button, QSpinBox::down-button {
                 background-color: #4ECDC4;
                 border: none;
-                width: 16px;
+                width: 18px;
             }
             QSpinBox::up-arrow {
                 image: none;
@@ -537,7 +537,7 @@ class ProgressInputDialog(QDialog):
                 background-color: #4ECDC4;
                 color: #000000;
                 border: none;
-                padding: 8px 16px;
+                padding: 8px 18px;
                 border-radius: 4px;
                 font-weight: bold;
             }
@@ -621,7 +621,7 @@ class AddExerciseDialog(QDialog):
             }
             QLabel {
                 color: #FFFFFF;
-                font-size: 12px;
+                font-size: 14px;
             }
             QLineEdit, QSpinBox, QComboBox {
                 background-color: #3D3D3D;
@@ -629,7 +629,7 @@ class AddExerciseDialog(QDialog):
                 border: 1px solid #555555;
                 border-radius: 3px;
                 padding: 5px;
-                font-size: 12px;
+                font-size: 14px;
             }
             QLineEdit:focus, QSpinBox:focus, QComboBox:focus {
                 border: 1px solid #4ECDC4;
@@ -648,7 +648,7 @@ class AddExerciseDialog(QDialog):
             QSpinBox::up-button, QSpinBox::down-button {
                 background-color: #4ECDC4;
                 border: none;
-                width: 16px;
+                width: 18px;
             }
             QSpinBox::up-arrow {
                 image: none;
@@ -666,7 +666,7 @@ class AddExerciseDialog(QDialog):
                 background-color: #4ECDC4;
                 color: #000000;
                 border: none;
-                padding: 8px 16px;
+                padding: 8px 18px;
                 border-radius: 4px;
                 font-weight: bold;
             }
