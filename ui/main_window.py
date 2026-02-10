@@ -207,7 +207,7 @@ class MainWindow(QMainWindow):
         # Task summary
         task_summary_group = QWidget()
         task_summary_layout = QVBoxLayout(task_summary_group)
-        task_summary_title = QLabel("任務清單 (Tasks)")
+        task_summary_title = QLabel("Tasks")
         task_summary_title.setFont(points_title_font)
         task_summary_layout.addWidget(task_summary_title)
         
@@ -223,7 +223,7 @@ class MainWindow(QMainWindow):
         # Exercise summary
         exercise_summary_group = QWidget()
         exercise_summary_layout = QVBoxLayout(exercise_summary_group)
-        exercise_summary_title = QLabel("每日運動 (Exercises)")
+        exercise_summary_title = QLabel("Exercises")
         exercise_summary_title.setFont(points_title_font)
         exercise_summary_layout.addWidget(exercise_summary_title)
         
@@ -720,7 +720,7 @@ class MainWindow(QMainWindow):
         
         # Apply global font size adjustment
         app_font = self.font()
-        base_size = 10  # Base font size
+        base_size = 12  # Base font size
         new_size = int(base_size * scale) + text_offset
         app_font.setPointSize(max(8, new_size))  # Minimum 8pt
         self.setFont(app_font)
@@ -728,7 +728,7 @@ class MainWindow(QMainWindow):
         # Apply to all child widgets recursively
         for widget in self.findChildren(QWidget):
             widget_font = widget.font()
-            widget_base_size = 10  # Default base size
+            widget_base_size = 12  # Default base size
             
             # Preserve relative sizes for headers/titles
             if widget_font.pointSize() > 12:
