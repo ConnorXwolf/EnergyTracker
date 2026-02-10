@@ -214,6 +214,16 @@ class MonthlyHPRingWidget(QWidget):
         """
         Determine segment color based on HP value.
         
+        Updated thresholds:
+        - HP = 33: Light Gray (Default)
+        - HP < 34: Red (None)
+        - 34-45: Orange (Very Low)
+        - 46-57: Yellow (Low)
+        - 58-69: Light Green (Moderate)
+        - 70-81: Green (High)
+        - 82-91: High Green (Very High)
+        - 92-100: Dark Green (Maximum)
+        
         Args:
             hp_data: HP data for the day (None if no data)
             
@@ -221,24 +231,41 @@ class MonthlyHPRingWidget(QWidget):
             Hex color code string
         """
         if hp_data is None:
-            return '#FF6B6B'  # Red (None)
+            return "#757575"  # Red (No data)
         
         hp = hp_data.hp
         
-        if hp < 33:
-            return '#FF6B6B'  # Red (None/Very Poor)
-        elif 33 <= hp < 44:
-            return '#FFA500'  # Orange (Very Low)
-        elif 44 <= hp < 55:
-            return '#FFD93D'  # Yellow (Low)
-        elif 55 <= hp < 66:
-            return '#C8E6C9'  # Light Green (Moderate)
-        elif 66 <= hp < 77:
-            return '#81C784'  # Green (High)
-        elif 77 <= hp < 88:
-            return '#4CAF50'  # High Green (Very High)
-        else:  # 88-100
-            return '#2E7D32'  # Dark Green (Maximum)
+        # Special case: HP = 33 is default state
+        if hp == 33:
+            return '#B0B0B0'  # Light Gray (Default)
+        
+        # None/Very Poor (< 34)
+        if hp < 34:
+            return '#FF6B6B'  # Red
+        
+        # Very Low (34-45)
+        elif 34 <= hp <= 45:
+            return '#FFA500'  # Orange
+        
+        # Low (46-57)
+        elif 46 <= hp <= 57:
+            return '#FFD93D'  # Yellow
+        
+        # Moderate (58-69)
+        elif 58 <= hp <= 69:
+            return '#C8E6C9'  # Light Green
+        
+        # High (70-81)
+        elif 70 <= hp <= 81:
+            return '#81C784'  # Green
+        
+        # Very High (82-91)
+        elif 82 <= hp <= 91:
+            return '#4CAF50'  # High Green
+        
+        # Maximum (92-100)
+        else:
+            return '#2E7D32'  # Dark Green
     
     def mousePressEvent(self, event) -> None:
         """
