@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS exercises (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
-    category TEXT NOT NULL CHECK(category IN ('physical', 'mental', 'sleepiness')),
+    category TEXT NOT NULL CHECK(category IN ('cardio', 'muscle', 'stretch')),
     color TEXT NOT NULL CHECK(length(color) = 7 AND color LIKE '#%'),
     target_value INTEGER NOT NULL CHECK(target_value > 0),
     unit TEXT NOT NULL CHECK(unit IN ('reps', 'sets', 'minutes', 'km', 'hours')),
