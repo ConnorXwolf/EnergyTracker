@@ -54,7 +54,7 @@ class MonthlyHPTrackerWindow(QDialog):
         
         self.setWindowTitle("HP Tracker")
         self.setModal(False)
-        self.setMinimumSize(700, 800)
+        self.setMinimumSize(900, 950)
         
         self._setup_ui()
         self._load_month_data()
@@ -77,7 +77,7 @@ class MonthlyHPTrackerWindow(QDialog):
                 background-color: #4ECDC4;
                 color: #000000;
                 border: none;
-                padding: 8px 16px;
+                padding: 14px 16px;
                 border-radius: 4px;
                 font-weight: bold;
                 min-width: 80px;
@@ -146,7 +146,7 @@ class MonthlyHPTrackerWindow(QDialog):
         detail_header.setFont(detail_header_font)
         
         self.detail_label = QLabel("Click on a day to view details")
-        self.detail_label.setStyleSheet("color: #AAAAAA; font-size: 13px;")
+        self.detail_label.setStyleSheet("color: #AAAAAA; font-size: 16px;")
         self.detail_label.setWordWrap(True)
         
         detail_layout.addWidget(detail_header)
@@ -279,7 +279,7 @@ class MonthlyHPTrackerWindow(QDialog):
                     f"Day {day}\n\n"
                     f"No HP data recorded for this day."
                 )
-                self.detail_label.setStyleSheet("color: #FF6B6B; font-size: 13px;")
+                self.detail_label.setStyleSheet("color: #FF6B6B; font-size: 16px;")
             
             elif hp_data.hp == 33:
                 # HP = 33 indicates default/uninitialized state
@@ -290,7 +290,7 @@ class MonthlyHPTrackerWindow(QDialog):
                     f"Mental: {hp_data.mental} | "
                     f"Sleepiness: {hp_data.sleepiness}"
                 )
-                self.detail_label.setStyleSheet("color: #B0B0B0; font-size: 13px;")
+                self.detail_label.setStyleSheet("color: #B0B0B0; font-size: 16px;")
             
             else:
                 # Normal HP data with valid category
@@ -303,7 +303,7 @@ class MonthlyHPTrackerWindow(QDialog):
                 
                 # Color code based on HP category
                 color = self._get_detail_color(hp_data.hp)
-                self.detail_label.setStyleSheet(f"color: {color}; font-size: 13px;")
+                self.detail_label.setStyleSheet(f"color: {color}; font-size: 16px;")
             
             # Update ring chart highlight
             self.ring_widget.set_selected_day(day)
