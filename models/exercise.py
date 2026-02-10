@@ -91,7 +91,7 @@ class ExerciseLog(BaseModel):
     actual_value: int = Field(ge=0)
     target_value: int = Field(gt=0)
     unit: Literal['reps', 'sets', 'minutes', 'km', 'hours']
-    category: Literal['physical', 'mental', 'sleepiness']
+    category: Literal['cardio', 'muscle', 'stretch']
     notes: str = Field(default="", max_length=500)
     
     @field_validator('date')
