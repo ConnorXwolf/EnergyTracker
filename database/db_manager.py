@@ -113,6 +113,44 @@ class DatabaseManager:
         finally:
             cursor.close()
     
+    def execute(self, query: str, params: tuple = ()) -> None:
+        """
+        Execute a query without returning results.
+        
+        Args:
+            query: SQL query string
+            params: Query parameters tuple
+            
+        Raises:
+            sqlite3.Error: If execution fails
+        """
+        try:
+            with self.transaction() as cursor:
+                cursor.execute(query, params)
+        except sqlite3.Error as e:
+            raise sqlite3.Error(f"Query execution failed: {e}") from e
+    
+    def fetch_one(self, query: str, params: tuple = ()) -> Optional[tuple]:
+        """
+        Execute query and fetch single result.
+        
+        Args:
+            query: SQL query string
+            params: Query parameters tuple
+            
+        Returns:
+            Single result tuple or None
+            
+        Raises:
+            sqlite3.Error: If query fails
+        """
+        try:
+            cursor = self._connection.cursor()
+            cursor.execute(query, params)
+            return cursor.fetchone()
+        except sqlite3.Error as e:
+            raise sqlite3.Error(f"Fetch one failed: {e}") from e
+    
     # ==================== Exercise Operations ====================
     
     def create_exercise(self, exercise: Exercise) -> int:
@@ -615,6 +653,61 @@ class DatabaseManager:
         except sqlite3.Error as e:
             raise sqlite3.Error(
                 f"Failed to retrieve tasks for date '{date}': {e}"
+            ) from e
+        except ValueError:
+            # Re-raise validation errors
+            raise
+    
+    def get_tasks_by_month(self, year: int, month: int) -> List[Task]:
+        """
+        Retrieve tasks with due dates in specified month.
+        
+        Args:
+            year: Target year (e.g., 2026)
+            month: Target month (1-12)
+            
+        Returns:
+            List of Task models with due_date in specified month
+            
+        Raises:
+            sqlite3.Error: If query fails
+            ValueError: If month is invalid
+        """
+        try:
+            # Validate month range
+            if not 1 <= month <= 12:
+                raise ValueError(f"Invalid month: {month}. Must be 1-12")
+            
+            # Construct date pattern for LIKE query
+            date_pattern = f"{year:04d}-{month:02d}-%"
+            
+            cursor = self._connection.cursor()
+            cursor.execute(
+                """
+                SELECT id, title, is_completed, date, due_date, priority, category
+                FROM tasks
+                WHERE due_date LIKE ?
+                ORDER BY due_date ASC, priority DESC, created_at ASC
+                """,
+                (date_pattern,)
+            )
+            
+            rows = cursor.fetchall()
+            return [
+                Task(
+                    id=row['id'],
+                    title=row['title'],
+                    is_completed=bool(row['is_completed']),
+                    date=row['date'],
+                    due_date=row['due_date'],
+                    priority=row['priority'],
+                    category=row['category']
+                )
+                for row in rows
+            ]
+        except sqlite3.Error as e:
+            raise sqlite3.Error(
+                f"Failed to retrieve tasks for {year}-{month:02d}: {e}"
             ) from e
         except ValueError:
             # Re-raise validation errors
