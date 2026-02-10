@@ -15,22 +15,45 @@ DATABASE_NAME: str = "energy_tracker.db"
 # Exercise category definitions with associated colors
 EXERCISE_CATEGORIES: Dict[str, Dict[str, Any]] = {
     'cardio': {
-        'color': '#808080',  # Neutral gray (unused in UI)
+        'color': '#808080',  # Neutral gray
         'color_bright': '#999999',
         'text_color': '#FFFFFF',
         'examples': ['Running', 'Cycling', 'Swimming', 'Jump Rope']
     },
     'muscle': {
-        'color': '#808080',  # Neutral gray (unused in UI)
+        'color': '#808080',  # Neutral gray
         'color_bright': '#999999',
         'text_color': '#FFFFFF',
         'examples': ['Push-ups', 'Pull-ups', 'Squats', 'Weights']
     },
     'stretch': {
-        'color': '#808080',  # Neutral gray (unused in UI)
+        'color': '#808080',  # Neutral gray
         'color_bright': '#999999',
         'text_color': '#FFFFFF',
         'examples': ['Yoga', 'Stretching', '拉筋', 'Flexibility']
+    }
+}
+
+# Manual HP points categories (for ring chart visualization)
+# These are SEPARATE from exercise categories
+HP_POINT_CATEGORIES: Dict[str, Dict[str, Any]] = {
+    'physical': {
+        'color': '#FFD93D',  # Yellow
+        'color_bright': '#FFE066',
+        'text_color': '#000000',
+        'display_name': 'Physical'
+    },
+    'mental': {
+        'color': "#4E6ECD",  # Cyan
+        'color_bright': '#4E6ECD',
+        'text_color': '#000000',
+        'display_name': 'Mental'
+    },
+    'sleepiness': {
+        'color': '#FF6B6B',  # Red
+        'color_bright': '#FF8E8E',
+        'text_color': '#FFFFFF',
+        'display_name': 'Sleepiness'
     }
 }
 
@@ -141,47 +164,3 @@ def validate_unit(unit: str) -> bool:
         True if valid, False otherwise
     """
     return unit in VALID_UNITS
-# Exercise category definitions with associated colors
-EXERCISE_CATEGORIES: Dict[str, Dict[str, Any]] = {
-    'cardio': {
-        'color': '#808080',  # Neutral gray (unused in UI)
-        'color_bright': '#999999',
-        'text_color': '#FFFFFF',
-        'examples': ['Running', 'Cycling', 'Swimming', 'Jump Rope']
-    },
-    'muscle': {
-        'color': '#808080',  # Neutral gray (unused in UI)
-        'color_bright': '#999999',
-        'text_color': '#FFFFFF',
-        'examples': ['Push-ups', 'Pull-ups', 'Squats', 'Weights']
-    },
-    'stretch': {
-        'color': '#808080',  # Neutral gray (unused in UI)
-        'color_bright': '#999999',
-        'text_color': '#FFFFFF',
-        'examples': ['Yoga', 'Stretching', '拉筋', 'Flexibility']
-    }
-}
-
-# Manual HP points categories (for ring chart visualization)
-# These are SEPARATE from exercise categories
-HP_POINT_CATEGORIES: Dict[str, Dict[str, Any]] = {
-    'physical': {
-        'color': '#FFD93D',  # Yellow
-        'color_bright': '#FFE066',
-        'text_color': '#000000',
-        'display_name': 'Physical'
-    },
-    'mental': {
-        'color': '#4ECDC4',  # Cyan
-        'color_bright': '#6FE4DB',
-        'text_color': '#000000',
-        'display_name': 'Mental'
-    },
-    'sleepiness': {
-        'color': '#FF6B6B',  # Red
-        'color_bright': '#FF8E8E',
-        'text_color': '#FFFFFF',
-        'display_name': 'Sleepiness'
-    }
-}
