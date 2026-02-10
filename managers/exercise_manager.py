@@ -346,84 +346,12 @@ class ExerciseManager(QObject):
             date: Date in ISO format
             
         Returns:
-            Dictionary with structure:
-            {
-                'hp': float (completion percentage),
-                'segments': [
-                    {
-                        'name': str,
-                        'category': str,
-                        'percentage': float,
-                        'angle': float,
-                        'color': str
-                    },
-                    ...
-                ]
-            }
+        Dictionary with hp=0 and empty segments
         """
-        try:
-            logs_data = self.get_logs_for_date(date)
-            summary = self.get_summary_for_date(date)
-            
-            if not logs_data:
-                return {
-                    'hp': 0.0,
-                    'segments': []
-                }
-            
-            # Calculate category-wise statistics
-            category_stats = {}
-            for category in ['physical', 'mental', 'sleepiness']:
-                category_logs = [
-                    log for _, log in logs_data
-                    if log.category == category
-                ]
-                
-                if category_logs:
-                    cat_actual = sum(log.actual_value for log in category_logs)
-                    cat_target = sum(log.target_value for log in category_logs)
-                    cat_percentage = (cat_actual / cat_target * 100) if cat_target > 0 else 0.0
-                    
-                    # Calculate angle proportional to contribution to total
-                    angle = (cat_actual / summary.total_target * 360) if summary.total_target > 0 else 0.0
-                    
-                    category_stats[category] = {
-                        'actual': cat_actual,
-                        'target': cat_target,
-                        'percentage': cat_percentage,
-                        'angle': angle
-                    }
-            
-            # Build segments list
-            segments = []
-            category_names = {
-                'physical': 'Physical',
-                'mental': 'Mental',
-                'sleepiness': 'Sleepiness'
-            }
-            
-            for category in ['physical', 'mental', 'sleepiness']:
-                if category in category_stats:
-                    stats = category_stats[category]
-                    segments.append({
-                        'name': category_names[category],
-                        'category': category,
-                        'percentage': round(stats['percentage'], 1),
-                        'angle': stats['angle'],
-                        'color': get_category_color(category)
-                    })
-            
-            return {
-                'hp': round(summary.completion_rate, 1),
-                'segments': segments
-            }
-            
-        except Exception as e:
-            print(f"Error generating ring chart data: {e}")
-            return {
-                'hp': 0.0,
-                'segments': []
-            }
+        return {
+        'hp': 0.0,
+        'segments': []
+    }
     
     def get_weekly_completion_rate(self, end_date: str) -> List[Tuple[str, float]]:
         """
