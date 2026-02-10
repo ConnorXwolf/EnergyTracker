@@ -63,9 +63,9 @@ class ExerciseProgressBar(QProgressBar):
         self.setMinimumWidth(300)
     
     def _apply_style(self) -> None:
-        """Apply lime green styling for all progress bars."""
-        # Always use lime green color
-        fill_color = '#32CD32'  # Lime green
+        """Apply  green styling for all progress bars."""
+        # Always use e green color
+        fill_color = "#178117"  #  green
         
         if self._log.actual_value == 0:
             fill_color = '#555555'  # Gray for zero progress
