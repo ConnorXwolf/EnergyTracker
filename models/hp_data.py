@@ -32,19 +32,21 @@ class HPData(BaseModel):
         Returns:
             Category name string
         """
-        if self.hp < 33:
+        if self.hp == 33:
+            return "Default"
+        elif self.hp < 34:
             return "None"
-        elif 33 <= self.hp < 44:
+        elif 34 <= self.hp <= 45:
             return "Very Low"
-        elif 44 <= self.hp < 55:
+        elif 46 <= self.hp <= 57:
             return "Low"
-        elif 55 <= self.hp < 66:
+        elif 58 <= self.hp <= 69:
             return "Moderate"
-        elif 66 <= self.hp < 77:
+        elif 70 <= self.hp <= 81:
             return "High"
-        elif 77 <= self.hp < 88:
+        elif 82 <= self.hp <= 91:
             return "Very High"
-        else:  # 88-100
+        else:  # 92-100
             return "Maximum"
     
     def format_display(self) -> str:
