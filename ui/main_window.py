@@ -276,6 +276,16 @@ class MainWindow(QMainWindow):
         report_action.triggered.connect(self._generate_daily_report)
         data_menu.addAction(report_action)
         
+        # ==================== MORE MENU (NEW) ====================
+        more_menu = menubar.addMenu("More")
+        
+        # Placeholder action to indicate menu is intentionally empty
+        placeholder_action = QAction("(No items yet)", self)
+        placeholder_action.setEnabled(False)
+        placeholder_action.setToolTip("Future features will be added here")
+        more_menu.addAction(placeholder_action)
+        # =========================================================
+        
         # Settings menu (between Data and Help)
         settings_menu = menubar.addMenu("Settings")
         
@@ -290,7 +300,7 @@ class MainWindow(QMainWindow):
         about_action = QAction("About", self)
         about_action.triggered.connect(self._show_about_dialog)
         help_menu.addAction(about_action)
-    
+
     def _connect_signals(self) -> None:
         """Connect inter-widget signals."""
         # Update summaries when data changes
