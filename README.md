@@ -1,182 +1,111 @@
-# Energy Tracker
+# 🔋 EnergyTracker
 
-A personal energy and productivity tracking application with exercise monitoring, task management, and calendar organization.
+## 🌟 The Story Behind the Project
 
-## Features
+**EnergyTracker** was born out of a personal battle.
 
-- **Exercise Tracking**: Track daily exercises with progress bars showing actual/target ratios
-- **Ring Chart Visualization**: Circular progress display with HP/FP metrics and category segments
-- **Task Checklist**: Organize tasks by category with completion tracking
-- **Calendar Integration**: Manage events with monthly calendar view and date highlighting
-- **Dark Theme UI**: Professional dark-themed interface
+As a developer living with **Fibromyalgia** and other chronic illnesses, I realized that traditional "productivity" apps are often discouraging. They focus on how much you can *do*, rather than how much you can *sustain*. In the chronic illness community, we often refer to "Spoon Theory"—the idea that we have a limited amount of energy (spoons) each day.
 
-## Requirements
+I built this app to help myself—and others with similar special needs—visualize their daily "HP" (Health Points). It is a tool designed to help you practice **Pacing**, avoid "crash and burn" cycles, and communicate your energy patterns with health professionals.
 
-- Python 3.10 or higher
-- Windows/macOS/Linux
+---
 
-## Installation
+## ✨ What is EnergyTracker?
 
-### 1. Clone or Download the Project
+EnergyTracker is a desktop companion that treats your energy like a rechargeable battery.
 
-```bash
-cd energy_tracker
-```
+* **Tasks** (Chores, Work, Socializing) consume your HP.
+* **Exercises & Rest** (Physical Therapy, Naps, Light Stretching) restore your HP.
+* **The Goal** is to stay balanced and avoid hitting 0%.
 
-### 2. Create Virtual Environment
+---
 
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
+## 📖 User Guide: How to Manage Your Energy
 
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
+Whether you are new to tracking or a long-time "Spoonie," here is how to get the most out of the app:
 
-### 3. Install Dependencies
+### 1. Setting Your "100%" (Initial Setup)
 
+Everyone’s baseline is different. One person’s "full energy" might be another person’s "50%."
+
+* Go to **Settings**.
+* Set your **Initial HP**. This represents how you feel on a "good day."
+* As you learn your limits, you can come back here to adjust your baseline.
+
+### 2. Planning Your Day (Adding Tasks)
+
+When you add a task, you assign it an **Energy Weight**:
+
+* **Low (1-3 HP):** Light tasks like answering an email or brushing teeth.
+* **Medium (4-7 HP):** Moderate tasks like cooking a meal or a short phone call.
+* **High (8-10+ HP):** Heavy tasks like grocery shopping or a doctor's appointment.
+* **Logic:** When you check a task as "Done," the **Energy Ring** will automatically decrease, showing you exactly how much "battery" you have left for the rest of the day.
+
+### 3. Understanding the Energy Ring (Colors)
+
+The central ring provides instant visual feedback:
+
+* 🟢 **Green (70% - 100%):** You are in a safe zone. Feel free to engage in planned activities.
+* 🟡 **Yellow (30% - 69%):** Use caution. You are spending your energy quickly. Consider moving some tasks to tomorrow.
+* 🔴 **Red (Below 30%):** Warning zone. Your body needs rest. Prioritize recovery immediately to avoid a flare-up.
+
+### 4. Recovery & Recharging
+
+If you do a restorative activity (like Physical Therapy or a meditation session):
+
+* Log it in the **Exercise Manager**.
+* Completing these will **add HP back** to your ring, reflecting the benefits of rest and proper movement.
+
+### 5. Tracking Long-Term Trends
+
+Use the **Monthly Tracker** to look for patterns.
+
+* *Example:* "I notice every Wednesday my ring is in the Red. Why? Ah, I have three back-to-back meetings that day."
+* This data is incredibly helpful to show your doctor to explain how your fatigue impacts your daily life.
+
+---
+
+## 🔒 Privacy & Safety
+
+* **100% Offline**: Your health data is yours alone. It is stored in a file named `energy_tracker.db` on your computer. Nothing is ever uploaded to the internet.
+* **No Medical Advice**: This app is a tracking tool, not a doctor. Always listen to your body over the app’s numbers.
+
+---
+
+## 🚀 How to Install
+
+### Option A: The Easy Way (Windows)
+
+1. Download the `EnergyTracker.zip` from the latest release.
+2. Extract the folder and double-click **EnergyTracker.exe**.
+3. No installation process is required!
+
+### Option B: For Python Users
+
+1. Download the source code.
+2. Install the requirements:
 ```bash
 pip install -r requirements.txt
+
 ```
 
-## Running the Application
 
+3. Run the application:
 ```bash
 python main.py
-```
-
-## Usage
-
-### Exercise Tracking
-
-1. The application initializes with 4 default exercises (伏地挺身, 深蹲, 跑步, 拉筋)
-2. Click checkboxes to mark exercises as complete
-3. Click the edit button (✏) to enter actual values achieved
-4. Progress bars show actual/target ratios with category-based colors
-5. Summary displays completion rate and total progress
-
-### Ring Chart
-
-- **HP (Health Points)**: Overall completion percentage (exercises completed / total exercises)
-- **FP (Focus Points)**: Overall progress percentage (actual values / target values)
-- Color-coded segments represent exercise categories:
-  - **Red**: Cardio
-  - **Cyan**: Strength
-  - **Yellow**: Flexibility
-
-### Task Management
-
-1. Click "Add Task" to create new tasks
-2. Organize tasks by category (e.g., 收拾書包)
-3. Check boxes to mark tasks as complete
-4. Use "Clear Completed" to remove finished tasks
-
-### Calendar
-
-1. View monthly calendar with event highlighting
-2. Select dates to view events
-3. Click "Add Event" to create new calendar entries
-4. Events are highlighted in cyan on the calendar
-
-## Project Structure
 
 ```
-energy_tracker/
-├── main.py                  # Application entry point
-├── requirements.txt         # Python dependencies
-├── ui/                      # User interface components
-│   ├── main_window.py       # Main application window
-│   └── widgets/             # Custom widgets
-│       ├── ring_chart.py
-│       ├── exercise_checklist.py
-│       ├── task_checklist.py
-│       └── calendar_widget.py
-├── managers/                # Business logic
-│   ├── exercise_manager.py
-│   ├── task_manager.py
-│   └── event_manager.py
-├── models/                  # Data models
-│   ├── exercise.py
-│   ├── task.py
-│   └── event.py
-├── database/                # Data persistence
-│   ├── db_manager.py
-│   └── schema.sql
-└── utils/                   # Utilities
-    ├── config.py
-    └── date_helpers.py
-```
 
-## Database
 
-Data is stored in SQLite database (`energy_tracker.db`) in the application directory. The database includes:
-- Exercise definitions and daily logs
-- Task checklist items
-- Calendar events
 
-## Customization
+---
 
-### Adding New Exercises
+## 💬 A Note from the Developer
 
-1. Click "Add Exercise" in the exercise checklist
-2. Enter exercise name, category, target value, and unit
-3. Exercise will appear in the list with a progress bar
+I am developing this app as my energy allows. If you have suggestions on how to make the interface easier to use for people with brain fog, visual impairments, or chronic pain, please open an **Issue** or reach out.
 
-### Modifying Default Exercises
+**Gentle reminder: You are more than your productivity.**
 
-Edit `utils/config.py` and modify the `DEFAULT_EXERCISES` list:
+---
 
-```python
-DEFAULT_EXERCISES = [
-    {
-        'name': 'Your Exercise',
-        'category': 'cardio',  # or 'strength', 'flexibility'
-        'target_value': 30,
-        'unit': 'reps'  # or 'sets', 'minutes', 'km'
-    },
-    # Add more...
-]
-```
-
-## Troubleshooting
-
-### Application won't start
-
-1. Verify Python version: `python --version` (should be 3.10+)
-2. Ensure virtual environment is activated
-3. Reinstall dependencies: `pip install -r requirements.txt --force-reinstall`
-
-### Database errors
-
-1. Delete `energy_tracker.db` file (creates fresh database on next run)
-2. Restart application
-
-### Display issues
-
-1. Check display scaling in system settings
-2. Try running with: `python main.py --disable-high-dpi-scaling`
-
-## Development
-
-### Code Style
-
-- PEP 8 compliant
-- Type hints throughout
-- Google-style docstrings
-
-### Testing
-
-Run the application:
-```bash
-python main.py
-```
-
-## License
-
-This project is for personal use.
-
-## Version
-
-1.0.0
+*Created with care for the chronic illness community.*
