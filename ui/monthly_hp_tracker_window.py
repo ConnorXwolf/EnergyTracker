@@ -172,6 +172,7 @@ class MonthlyHPTrackerWindow(QDialog):
         Load HP data from database for current month.
         
         Queries daily_points table and updates ring chart display.
+        Handles HP = 33 as default/uninitialized state.
         """
         try:
             # Calculate days in month
@@ -206,6 +207,7 @@ class MonthlyHPTrackerWindow(QDialog):
                 date_str = row['date']
                 day = int(date_str.split('-')[2])
                 
+                # Store HP data regardless of value (including HP=33 default)
                 self._hp_data[day] = HPData(
                     hp=row['hp'],
                     physical=row['physical'],
@@ -262,6 +264,8 @@ class MonthlyHPTrackerWindow(QDialog):
         """
         Handle day selection from ring chart.
         
+        Displays HP breakdown with special handling for default state (HP=33).
+        
         Args:
             day: Selected day number (1-31)
         """
@@ -270,20 +274,36 @@ class MonthlyHPTrackerWindow(QDialog):
             hp_data = self._hp_data.get(day, None)
             
             if hp_data is None:
+                # No database record for this day
                 self.detail_label.setText(
                     f"Day {day}\n\n"
                     f"No HP data recorded for this day."
                 )
                 self.detail_label.setStyleSheet("color: #FF6B6B; font-size: 13px;")
+            
+            elif hp_data.hp == 33:
+                # HP = 33 indicates default/uninitialized state
+                self.detail_label.setText(
+                    f"Day {day} - {hp_data.date_str}\n\n"
+                    f"HP: 33 (Default - No points entered)\n"
+                    f"Physical: {hp_data.physical} | "
+                    f"Mental: {hp_data.mental} | "
+                    f"Sleepiness: {hp_data.sleepiness}"
+                )
+                self.detail_label.setStyleSheet("color: #B0B0B0; font-size: 13px;")
+            
             else:
-                # Format display text
+                # Normal HP data with valid category
                 detail_text = (
                     f"Day {day} - {hp_data.date_str}\n\n"
                     f"{hp_data.format_display()}"
                 )
                 
                 self.detail_label.setText(detail_text)
-                self.detail_label.setStyleSheet("color: #FFFFFF; font-size: 13px;")
+                
+                # Color code based on HP category
+                color = self._get_detail_color(hp_data.hp)
+                self.detail_label.setStyleSheet(f"color: {color}; font-size: 13px;")
             
             # Update ring chart highlight
             self.ring_widget.set_selected_day(day)
@@ -292,3 +312,30 @@ class MonthlyHPTrackerWindow(QDialog):
             print(f"Error displaying day details: {e}")
             import traceback
             traceback.print_exc()
+    
+    def _get_detail_color(self, hp: int) -> str:
+        """
+        Determine text color for detail panel based on HP value.
+        
+        Args:
+            hp: HP value (0-100)
+            
+        Returns:
+            Hex color code for text display
+        """
+        if hp == 33:
+            return '#B0B0B0'  # Light Gray (Default)
+        elif hp < 34:
+            return '#FF6B6B'  # Red (None)
+        elif 34 <= hp <= 45:
+            return '#FFA500'  # Orange (Very Low)
+        elif 46 <= hp <= 57:
+            return '#FFD93D'  # Yellow (Low)
+        elif 58 <= hp <= 69:
+            return '#C8E6C9'  # Light Green (Moderate)
+        elif 70 <= hp <= 81:
+            return '#81C784'  # Green (High)
+        elif 82 <= hp <= 91:
+            return '#4CAF50'  # High Green (Very High)
+        else:  # 92-100
+            return '#2E7D32'  # Dark Green (Maximum)
