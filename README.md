@@ -32,13 +32,12 @@ The app uses three core metrics to determine your daily capacity. While the main
 | --- | --- | --- | --- |
 | 🟡 **Yellow** | **Stamina** | Physical Energy | Your body's physical capacity (movement, chores). |
 | 🔵 **Blue** | **Mana** | Mental Energy | Your mood, cognitive load, and "brain" levels. |
-| 🔴 **Red** | **Fatigue** | Damage Taken | Your sleepiness level and the "drain" from lack of rest. |
 
 ### 📈 The Calculation
 
 Your functional energy is calculated using this formula:
 
-$$HP = (\text{Stamina} + \text{Mana}) - \text{Fatigue}$$
+$$HP = (\text{Stamina} + \text{Mana})
 
 ---
 
