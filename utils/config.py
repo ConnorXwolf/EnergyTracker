@@ -49,12 +49,6 @@ HP_POINT_CATEGORIES: Dict[str, Dict[str, Any]] = {
         'text_color': '#000000',
         'display_name': 'Mental'
     },
-    'sleepiness': {
-        'color': '#FF6B6B',  # Red
-        'color_bright': '#FF8E8E',
-        'text_color': '#FFFFFF',
-        'display_name': 'Sleepiness'
-    }
 }
 
 # Measurement units
