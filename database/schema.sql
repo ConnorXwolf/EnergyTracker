@@ -27,7 +27,6 @@ CREATE TABLE IF NOT EXISTS exercise_logs (
 );
 
 -- Task checklist table
--- MIGRATION NOTE: Added 'date' column for daily task tracking (2026-02-10)
 CREATE TABLE IF NOT EXISTS tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -50,13 +49,13 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- Daily points tracking table
--- Stores Physical/Mental/Sleepiness points per date
+-- UPDATED: Stamina (0-10) + Mana (0-10) → Score (20-100)
+-- Formula: hp = 20 + (physical + mental) * 4
 CREATE TABLE IF NOT EXISTS daily_points (
     date DATE PRIMARY KEY CHECK(date LIKE '____-__-__'),
     physical INTEGER NOT NULL DEFAULT 0 CHECK(physical BETWEEN 0 AND 10),
     mental INTEGER NOT NULL DEFAULT 0 CHECK(mental BETWEEN 0 AND 10),
-    sleepiness INTEGER NOT NULL DEFAULT 0 CHECK(sleepiness BETWEEN 0 AND 10),
-    hp INTEGER NOT NULL DEFAULT 0 CHECK(hp BETWEEN 0 AND 100),
+    hp INTEGER NOT NULL DEFAULT 20 CHECK(hp BETWEEN 20 AND 100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -77,6 +76,6 @@ CREATE TABLE IF NOT EXISTS app_metadata (
 );
 
 -- Insert initial metadata
-INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('db_version', '1.1.0');
+INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('db_version', '1.2.0');
 INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('initialized_at', datetime('now'));
-INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('last_migration', '2026-02-10_add_task_date');
+INSERT OR IGNORE INTO app_metadata (key, value) VALUES ('last_update', '2026-02-11_stamina_mana_conversion');
