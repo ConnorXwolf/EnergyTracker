@@ -37,7 +37,7 @@ The app uses three core metrics to determine your daily capacity. While the main
 
 Your functional energy is calculated using this formula:
 
-$$HP = (\text{Stamina} + \text{Mana})
+HP = Stamina + Mana
 
 ---
 
